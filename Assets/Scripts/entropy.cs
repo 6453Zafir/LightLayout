@@ -11,7 +11,7 @@ public class entropy : MonoBehaviour
     public Texture2D testTexture;
     int PixelNum = 0;
     int[] countPixel = new int[256];
-    double entropyValue = 0;
+    static double entropyValue = 0;
     Texture2D texture;
     Texture2D newTex;
 
@@ -55,24 +55,6 @@ public class entropy : MonoBehaviour
             grab = false;
         }
     }
-
-
-    //public Texture2D SaveRenderTextureToPNG(RenderTexture rt, string contents, string pngName)
-    //{
-    //    RenderTexture prev = RenderTexture.active;
-    //    RenderTexture.active = rt;
-    //    Texture2D png = new Texture2D(rt.width, rt.height, TextureFormat.ARGB32, false);
-    //    png.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
-    //    byte[] bytes = png.EncodeToPNG();
-    //    if (!Directory.Exists(contents))
-    //        Directory.CreateDirectory(contents);
-    //    FileStream file = File.Open(contents + "/" + pngName + ".png", FileMode.Create);
-    //    BinaryWriter writer = new BinaryWriter(file);
-    //    writer.Write(bytes);
-    //    file.Close();
-    //    return png;
-    //}
-
 
     void TurnToGray()
     {
