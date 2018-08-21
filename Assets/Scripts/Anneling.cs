@@ -94,7 +94,6 @@ namespace SimulateAnneling {
     //    }
     //}
 
-
     public class Anneling : MonoBehaviour
     {
         public static double entropy = 0;
@@ -108,12 +107,12 @@ namespace SimulateAnneling {
         const double ZMIN = 0;
 
         //冷却表参数
-        int MarkovLength = 20;          // 马可夫链长度10000
-        double DecayScale = 1;          // 衰减参数0.95
+        int MarkovLength = 500;          // 马可夫链长度10000
+        double DecayScale = 0.95;          // 衰减参数0.95
         double StepFactor = 0.2;          // 步长因子0.02
         double Temperature = 100;          // 初始温度
         //double Tolerance = 1e-8;           // 容差
-        double Tolerance = 0.01f;           // 容差
+        double Tolerance = 0.001f;           // 容差
 
         double PreX, NextX;                // prior and next value of x
         double PreZ, NextZ;                // prior and next value of y
@@ -122,28 +121,27 @@ namespace SimulateAnneling {
         double AcceptPoints = 0.0;         // Metropolis过程中总接受点
 
         System.Random rnd = new System.Random();
-
-        bool grab;
+        
         int PixelNum = 0;
         double entropyValue = 0;
         int[] countPixel = new int[256];
-        Texture2D texture;
         Texture2D newTex;
-        int count = 0;
 
         void Update()
         {
             if (Input.GetKeyDown(KeyCode.L))
             {
                 GetTheCamEntropy(0,0);
-                //Optimizing();
+                SAOptimizeLighting();
             }
         }
-        void Optimizing()
+        void SAOptimizeLighting()
         {
             // 随机选点
-            PreX = XMAX * rnd.NextDouble();
-            PreZ = ZMAX * rnd.NextDouble();
+            //PreX = XMAX * rnd.NextDouble();
+            //PreZ = ZMAX * rnd.NextDouble();
+            PreX = XMAX * 0.5f;
+            PreZ = ZMAX * 0.5f;
             PreBestX = BestX = PreX;
             PreBestZ = BestZ = PreZ;
             // 每迭代一次退火一次(降温), 直到满足迭代条件为止
@@ -207,8 +205,9 @@ namespace SimulateAnneling {
         double GetTheCamEntropy(double x,double z)
         {
             TestLight.transform.position = new Vector3((float)x, 2.5f, (float)z);
+            TestCam.Render();
             for (int i = 0; i < 255; i++)
-            {
+            {    
                 countPixel[i] = 0;
             }
             PixelNum = 0;
