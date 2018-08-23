@@ -99,6 +99,9 @@ namespace SimulateAnneling {
         public static double entropy = 0;
         public GameObject TestLight;
         public Camera TestCam;
+        public Camera CenterCam;
+
+        public LightmapData ld;
         //x的移动空间0~-4.53
         const double XMAX = 3;
         const double XMIN = 0;
@@ -129,14 +132,23 @@ namespace SimulateAnneling {
 
         void Update()
         {
-            if (Input.GetKeyDown(KeyCode.L))
+            if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-                GetTheCamEntropy(0,0);
-                SAOptimizeLighting();
+                SAOptimizeLighting(1);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                SAOptimizeLighting(2);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha3))
+            {
+                SAOptimizeLighting(3);
             }
         }
-        void SAOptimizeLighting()
+
+        void SAOptimizeLighting(int funcNum)
         {
+            float currentTime = Time.realtimeSinceStartup;
             // 随机选点
             //PreX = XMAX * rnd.NextDouble();
             //PreZ = ZMAX * rnd.NextDouble();
@@ -160,7 +172,7 @@ namespace SimulateAnneling {
                     } while (!(NextX >= XMIN && NextX <= XMAX && NextZ >= ZMIN && NextZ <= ZMAX));
 
                     // 2) 是否全局最优解
-                    if (GetTheCamEntropy(BestX, BestZ) > GetTheCamEntropy(NextX, NextZ))
+                    if (GetEntropy(funcNum, BestX, BestZ) > GetEntropy(funcNum, NextX, NextZ))
                     {
                         // 保留上一个最优解
                         PreBestX = BestX;
@@ -173,7 +185,7 @@ namespace SimulateAnneling {
                     }
                     
                     // 3) Metropolis过程
-                    if (GetTheCamEntropy(PreX,PreZ) - GetTheCamEntropy(NextX,NextZ) < 0)
+                    if (GetEntropy(funcNum, PreX,PreZ) - GetEntropy(funcNum, NextX,NextZ) < 0)
                     {
                         // 接受, 此处lastPoint即下一个迭代的点以新接受的点开始
                         PreX = NextX;
@@ -182,7 +194,7 @@ namespace SimulateAnneling {
                     }
                     else
                     {
-                        double change = -1 * (GetTheCamEntropy(NextX,NextZ) - GetTheCamEntropy(PreX,PreZ)) / Temperature;
+                        double change = -1 * (GetEntropy(funcNum, NextX,NextZ) - GetEntropy(funcNum, PreX,PreZ)) / Temperature;
                         if (Math.Exp(change) > rnd.NextDouble())
                         {
 
@@ -196,23 +208,45 @@ namespace SimulateAnneling {
                         }
                     }
                 }
-            } while (Math.Abs(GetTheCamEntropy(BestX,BestZ) - GetTheCamEntropy(PreBestX,PreBestZ)) > Tolerance);
+            } while (Math.Abs(GetEntropy(funcNum, BestX,BestZ) - GetEntropy(funcNum, PreBestX,PreBestZ)) > Tolerance);
             TestLight.transform.position = new Vector3((float)BestX, 2.5f, (float)BestZ);
+            print("function " + funcNum + " took " + (Time.realtimeSinceStartup - currentTime) + "s, The final entropy value is: " +(-entropyValue));
         }
 
-
-
-        double GetTheCamEntropy(double x,double z)
-        {
-            TestLight.transform.position = new Vector3((float)x, 2.5f, (float)z);
-            TestCam.Render();
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="FunNum">图像来源 1：矩形 2：全景图 3：lightMap</param>
+        /// <param name="x"></param>
+        /// <param name="z"></param>
+        /// <returns></returns>
+        double GetEntropy(int FunNum, double x, double z) {
+            switch (FunNum)
+            {
+                case 1:
+                    //相机的矩形视角图
+                    TestLight.transform.position = new Vector3((float)x, 2.5f, (float)z);
+                    TestCam.Render();
+                    newTex = ConvertRTtoT2D(TestCam.targetTexture);
+                    break;
+                case 2:
+                    //位于场景中间相机视角的全景图
+                    TestLight.transform.position = new Vector3((float)x, 2.5f, (float)z);
+                    CenterCam.Render();
+                    newTex = ConvertRTtoT2D(CenterCam.targetTexture);
+                    break;
+                case 3:
+                    //lightMap
+                    break;
+                default:
+                    break;
+            }
             for (int i = 0; i < 255; i++)
-            {    
+            {
                 countPixel[i] = 0;
             }
             PixelNum = 0;
             entropyValue = 0;
-            newTex = ConvertRTtoT2D(TestCam.targetTexture);
             Color currColor;
             int ret = 0;
             for (int i = 0; i < newTex.width; i++)
@@ -235,7 +269,8 @@ namespace SimulateAnneling {
                     entropyValue += tempE;
                 }
             }
-            print("the entropyValue is : " + -entropyValue);
+            //print("the entropyValue is : " + -entropyValue);
+
             return -entropyValue;
         }
 
@@ -248,9 +283,66 @@ namespace SimulateAnneling {
             return tex;
         }
 
-    }
 
-   
+        Texture2D ConvertEXRtoT2D(RenderTexture rt)
+        {
+            LightmapData lp;
+
+
+            //Texture2D tex = lp.lightmapColor.EncodeToPNG();
+            Texture2D tex = new Texture2D(512,512);
+            tex.LoadImage(lp.lightmapColor.EncodeToPNG());
+        }
+    } 
 }
 
+//伪代码
+//随机选点赋予preX（现改为取最大值的一半）
+//preX=全局最优解=局部最优解
+//do
+//{
+//	降温
+//    acceptPoint = 0 //记录取值的接受个数
+//	for（马尔科夫链长度）
+//	{
+//		do
+//		{
+//			根据步长随机选取下一个解nextX
+//		}while（x不在合理范围区间）	
+//		if（全局最优解求值>nextX求值）
+//		{
+//			全局最优解=局部最优解
+//		}
+//		else
+//		{
+//			全局最优解=nextX
+//		}
 
+		
+//		if（preX求值<nextX求值）
+//		{
+//			preX=nextX
+//            acceptPoint+=1
+//		}
+//		else//挣脱局部最优解
+//		{
+//			if(根据结果差和当前温度计算挣脱条件满足）
+//			{
+//				接受新解，preX=nextX	
+//			}else
+//			{
+//				不接受，preX保持不变
+//			}		
+//		}
+//	}
+
+//}while(全局最优解求值与局部最优解求值之差的绝对值大于容差)
+//得到最优解bestX
+
+////计算熵
+//更新灯光位置
+//更新相机渲染贴图
+//将渲染贴图转换为2D图像
+//灰度化该2D图像
+//根据渲染图计算所有灰度值的pi
+//根据pi算得熵
