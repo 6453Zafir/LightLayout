@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 using System;
 
 namespace SimulateAnneling {
@@ -101,6 +102,7 @@ namespace SimulateAnneling {
         public Camera TestCam;
         public Camera CenterCam;
 
+        private string LightMapPath = "Resources/Scene/bedroom";
         public LightmapData ld;
         //x的移动空间0~-4.53
         const double XMAX = 3;
@@ -142,6 +144,9 @@ namespace SimulateAnneling {
             }
             if (Input.GetKeyDown(KeyCode.Alpha3))
             {
+                Lightmapping.realtimeGI = false;
+                Lightmapping.bakedGI = true;
+
                 SAOptimizeLighting(3);
             }
         }
@@ -210,6 +215,9 @@ namespace SimulateAnneling {
                 }
             } while (Math.Abs(GetEntropy(funcNum, BestX,BestZ) - GetEntropy(funcNum, PreBestX,PreBestZ)) > Tolerance);
             TestLight.transform.position = new Vector3((float)BestX, 2.5f, (float)BestZ);
+
+            Lightmapping.realtimeGI = true;
+            Lightmapping.bakedGI = false;
             print("function " + funcNum + " took " + (Time.realtimeSinceStartup - currentTime) + "s, The final entropy value is: " +(-entropyValue));
         }
 
@@ -237,6 +245,9 @@ namespace SimulateAnneling {
                     break;
                 case 3:
                     //lightMap
+                    TestLight.transform.position = new Vector3((float)x, 2.5f, (float)z);
+
+                    newTex = ConvertEXRtoT2D();
                     break;
                 default:
                     break;
@@ -270,7 +281,6 @@ namespace SimulateAnneling {
                 }
             }
             //print("the entropyValue is : " + -entropyValue);
-
             return -entropyValue;
         }
 
@@ -284,17 +294,20 @@ namespace SimulateAnneling {
         }
 
 
-        Texture2D ConvertEXRtoT2D(RenderTexture rt)
+        Texture2D ConvertEXRtoT2D()
         {
-            LightmapData lp;
+            //Lightmapping.bakedGI = true;
 
-
-            //Texture2D tex = lp.lightmapColor.EncodeToPNG();
-            Texture2D tex = new Texture2D(512,512);
-            tex.LoadImage(lp.lightmapColor.EncodeToPNG());
+            Lightmapping.ClearDiskCache();
+            Lightmapping.completed = Lightmapping.OnCompletedFunction(() => {});
+            Lightmapping.Bake();
+            //LightmapSettings.lightmaps[0] = null;
+            Texture2D tex = LightmapSettings.lightmaps[0].lightmapColor;
+            return tex;
         }
     } 
 }
+
 
 //伪代码
 //随机选点赋予preX（现改为取最大值的一半）
@@ -318,7 +331,7 @@ namespace SimulateAnneling {
 //			全局最优解=nextX
 //		}
 
-		
+
 //		if（preX求值<nextX求值）
 //		{
 //			preX=nextX
@@ -346,3 +359,4 @@ namespace SimulateAnneling {
 //灰度化该2D图像
 //根据渲染图计算所有灰度值的pi
 //根据pi算得熵
+
