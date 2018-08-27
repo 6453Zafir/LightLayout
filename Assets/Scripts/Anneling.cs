@@ -298,8 +298,8 @@ namespace SimulateAnneling {
         {
             //Lightmapping.bakedGI = true;
 
-            Lightmapping.ClearDiskCache();
-            Lightmapping.completed = Lightmapping.OnCompletedFunction(() => {});
+            //Lightmapping.ClearDiskCache();
+            //Lightmapping.completed = Lightmapping.OnCompletedFunction(() => {});
             Lightmapping.Bake();
             //LightmapSettings.lightmaps[0] = null;
             Texture2D tex = LightmapSettings.lightmaps[0].lightmapColor;
