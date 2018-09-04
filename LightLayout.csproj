@@ -288,6 +288,7 @@
     <Compile Include="Assets\PostProcessing\Utilities\CustomMotionTexture\ExampleWheelController.cs" />
     <Compile Include="Assets\Scripts\Anneling.cs" />
     <Compile Include="Assets\Scripts\entropy.cs" />
+    <Compile Include="Assets\Scripts\TryCubemap.cs" />
     <Compile Include="Assets\Scripts\TToI.cs" />
   </ItemGroup>
   <ItemGroup>
