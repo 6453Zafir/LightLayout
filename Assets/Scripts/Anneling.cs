@@ -101,6 +101,10 @@ namespace SimulateAnneling {
         public GameObject TestLight;
         public Camera TestCam;
         public Camera CenterCam;
+        public Cubemap centerCubemap;
+        Texture2D up, bottom, left, right, back, forward;
+
+
 
         private string LightMapPath = "Resources/Scene/bedroom";
         public LightmapData ld;
@@ -146,8 +150,11 @@ namespace SimulateAnneling {
             {
                 Lightmapping.realtimeGI = false;
                 Lightmapping.bakedGI = true;
-
                 SAOptimizeLighting(3);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha4))
+            {
+                SAOptimizeLighting(4);
             }
         }
 
@@ -155,8 +162,9 @@ namespace SimulateAnneling {
         {
             float currentTime = Time.realtimeSinceStartup;
             // 随机选点
-            //PreX = XMAX * rnd.NextDouble();
-            //PreZ = ZMAX * rnd.NextDouble();
+            // PreX = XMAX * rnd.NextDouble();
+            // PreZ = ZMAX * rnd.NextDouble();
+            // 改为选中点
             PreX = XMAX * 0.5f;
             PreZ = ZMAX * 0.5f;
             PreBestX = BestX = PreX;
@@ -202,7 +210,6 @@ namespace SimulateAnneling {
                         double change = -1 * (GetEntropy(funcNum, NextX,NextZ) - GetEntropy(funcNum, PreX,PreZ)) / Temperature;
                         if (Math.Exp(change) > rnd.NextDouble())
                         {
-
                             // 以一定的概率接受新的解
                             PreX = NextX;
                             PreZ = NextZ;
@@ -229,59 +236,84 @@ namespace SimulateAnneling {
         /// <param name="z"></param>
         /// <returns></returns>
         double GetEntropy(int FunNum, double x, double z) {
-            switch (FunNum)
+            if (FunNum < 4)
             {
-                case 1:
-                    //相机的矩形视角图
-                    TestLight.transform.position = new Vector3((float)x, 2.5f, (float)z);
-                    TestCam.Render();
-                    newTex = ConvertRTtoT2D(TestCam.targetTexture);
-                    break;
-                case 2:
-                    //位于场景中间相机视角的全景图
-                    TestLight.transform.position = new Vector3((float)x, 2.5f, (float)z);
-                    CenterCam.Render();
-                    newTex = ConvertRTtoT2D(CenterCam.targetTexture);
-                    break;
-                case 3:
-                    //lightMap
-                    TestLight.transform.position = new Vector3((float)x, 2.5f, (float)z);
+                switch (FunNum)
+                {
+                    case 1:
+                        //相机的矩形视角图
+                        TestLight.transform.position = new Vector3((float)x, 2.5f, (float)z);
+                        TestCam.Render();
+                        newTex = ConvertRTtoT2D(TestCam.targetTexture);
+                        break;
+                    case 2:
+                        //位于场景中间相机视角的全景图
+                        TestLight.transform.position = new Vector3((float)x, 2.5f, (float)z);
+                        CenterCam.Render();
+                        newTex = ConvertRTtoT2D(CenterCam.targetTexture);
+                        break;
+                    case 3:
+                        //lightMap
+                        TestLight.transform.position = new Vector3((float)x, 2.5f, (float)z);
+                        newTex = ConvertEXRtoT2D();
+                        break;
+                    default:
+                        break;
+                }
+                for (int i = 0; i < 255; i++)
+                {
+                    countPixel[i] = 0;
+                }
+                PixelNum = 0;
+                entropyValue = 0;
+                Color currColor;
+                int ret = 0;
+                for (int i = 0; i < newTex.width; i++)
+                {
+                    for (int j = 0; j < newTex.height; j++)
+                    {
+                        currColor = newTex.GetPixel(i, j);
+                        ret = (int)(currColor.r * 0.299f * 255 + currColor.g * 0.587f * 255 + currColor.b * 0.114f * 255);
+                        PixelNum += 1;
+                        countPixel[ret] += 1;
+                    }
+                }
+                double tempP = 0, tempE = 0;
+                for (int i = 0; i < 255; i++)
+                {
+                    tempP = (float)countPixel[i] / (float)PixelNum;
+                    if (tempP != 0)
+                    {
+                        tempE = tempP * Math.Log(tempP);
+                        entropyValue += tempE;
+                    }
+                }
+                //print("the entropyValue is : " + -entropyValue);
+                return -entropyValue;
+            }
+            else {
+                TestLight.transform.position = new Vector3((float)x, 2.5f, (float)z);
+                CenterCam.Render();
+                CenterCam.RenderToCubemap(centerCubemap);
+                Color[] CubrmapColors = centerCubemap.GetPixels(CubemapFace.PositiveZ);
+                forward.SetPixels(CubrmapColors);
+                CubrmapColors = centerCubemap.GetPixels(CubemapFace.PositiveX);
+                right.SetPixels(CubrmapColors);
+                CubrmapColors = centerCubemap.GetPixels(CubemapFace.PositiveY);
+                up.SetPixels(CubrmapColors);
+                CubrmapColors = centerCubemap.GetPixels(CubemapFace.NegativeZ);
+                back.SetPixels(CubrmapColors);
+                CubrmapColors = centerCubemap.GetPixels(CubemapFace.NegativeX);
+                left.SetPixels(CubrmapColors);
+                CubrmapColors = centerCubemap.GetPixels(CubemapFace.NegativeY);
+                bottom.SetPixels(CubrmapColors);
 
-                    newTex = ConvertEXRtoT2D();
-                    break;
-                default:
-                    break;
+
+
+
+                return -entropyValue;
             }
-            for (int i = 0; i < 255; i++)
-            {
-                countPixel[i] = 0;
-            }
-            PixelNum = 0;
-            entropyValue = 0;
-            Color currColor;
-            int ret = 0;
-            for (int i = 0; i < newTex.width; i++)
-            {
-                for (int j = 0; j < newTex.height; j++)
-                {
-                    currColor = newTex.GetPixel(i, j);
-                    ret = (int)(currColor.r * 0.299f * 255 + currColor.g * 0.587f * 255 + currColor.b * 0.114f * 255);
-                    PixelNum += 1;
-                    countPixel[ret] += 1;
-                }
-            }
-            double tempP = 0, tempE = 0;
-            for (int i = 0; i < 255; i++)
-            {
-                tempP = (float)countPixel[i] / (float)PixelNum;
-                if (tempP != 0)
-                {
-                    tempE = tempP * Math.Log(tempP);
-                    entropyValue += tempE;
-                }
-            }
-            //print("the entropyValue is : " + -entropyValue);
-            return -entropyValue;
+          
         }
 
         Texture2D ConvertRTtoT2D(RenderTexture rt)

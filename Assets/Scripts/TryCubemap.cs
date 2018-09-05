@@ -18,7 +18,7 @@ public class TryCubemap : MonoBehaviour {
             this.GetComponent<Renderer>().material.SetTexture("_Cube", rp.bakedTexture);
             print(rp.bakedTexture.name);
             cenCam.RenderToCubemap(testCubemap);
-
-}
+            
+        }
 	}
 }
