@@ -25,7 +25,7 @@ RenderSettings:
   m_AmbientGroundColor: {r: 0.029850721, g: 0.029850721, b: 0.029850721, a: 1}
   m_AmbientIntensity: 1
   m_AmbientMode: 3
-  m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
+  m_SubtractiveShadowColor: {r: 0.095452145, g: 0, b: 0.44117647, a: 1}
   m_SkyboxMaterial: {fileID: 0}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
@@ -52,7 +52,7 @@ LightmapSettings:
     m_TemporalCoherenceThreshold: 1
     m_EnvironmentLightingMode: 0
     m_EnableBakedLightmaps: 1
-    m_EnableRealtimeLightmaps: 1
+    m_EnableRealtimeLightmaps: 0
   m_LightmapEditorSettings:
     serializedVersion: 9
     m_Resolution: 1
@@ -90,7 +90,7 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigmaIndirect: 2
     m_PVRFilteringAtrousPositionSigmaAO: 1
     m_ShowResolutionOverlay: 1
-  m_LightingDataAsset: {fileID: 112000246, guid: 55a60b1b1f15f3f43b7323e63a4ccdf8,
+  m_LightingDataAsset: {fileID: 112000002, guid: 55a60b1b1f15f3f43b7323e63a4ccdf8,
     type: 2}
   m_UseShadowmask: 0
 --- !u!196 &5
@@ -172,7 +172,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!108 &243571338
 Light:
   m_ObjectHideFlags: 0
@@ -451,7 +451,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!108 &700314029
 Light:
   m_ObjectHideFlags: 0
@@ -4921,6 +4921,7 @@ MonoBehaviour:
   TestLight: {fileID: 2099408709}
   TestCam: {fileID: 507528861}
   CenterCam: {fileID: 844321510}
+  centerCubemap: {fileID: 8900000, guid: 48e11accbe1bccb4ebc0a1938e0707f9, type: 2}
 --- !u!4 &906541698
 Transform:
   m_ObjectHideFlags: 0
@@ -5142,7 +5143,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!108 &1577433032
 Light:
   m_ObjectHideFlags: 0
@@ -5223,7 +5224,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!108 &2099408710
 Light:
   m_ObjectHideFlags: 0
@@ -5234,8 +5235,8 @@ Light:
   serializedVersion: 8
   m_Type: 2
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 1.88
-  m_Range: 3.2
+  m_Intensity: 8.88
+  m_Range: 3.68
   m_SpotAngle: 30
   m_CookieSize: 10
   m_Shadows:
@@ -5253,7 +5254,7 @@ Light:
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_Lightmapping: 4
+  m_Lightmapping: 2
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
@@ -5267,7 +5268,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2099408709}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.5, z: 0}
+  m_LocalPosition: {x: 1.445, y: 2.5, z: 1.888}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

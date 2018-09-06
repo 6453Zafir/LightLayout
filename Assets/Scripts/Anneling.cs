@@ -97,14 +97,15 @@ namespace SimulateAnneling {
 
     public class Anneling : MonoBehaviour
     {
-        public static double entropy = 0;
+       // public static double entropy = 0;
         public GameObject TestLight;
         public Camera TestCam;
         public Camera CenterCam;
         public Cubemap centerCubemap;
+        int textureWidth=256, textureHeight = 256;
         Texture2D up, bottom, left, right, back, forward;
-
-
+        double up_e, bottom_e, left_e, right_e, back_e, forward_e ;
+        double up_w = 0.05f, bottom_w = 0.35f, left_w = 0.15f, right_w = 0.15, forward_w =0.15f, back_w = 0.15f;
 
         private string LightMapPath = "Resources/Scene/bedroom";
         public LightmapData ld;
@@ -116,7 +117,7 @@ namespace SimulateAnneling {
         const double ZMIN = 0;
 
         //冷却表参数
-        int MarkovLength = 500;          // 马可夫链长度10000
+        int MarkovLength = 100;          // 马可夫链长度10000
         double DecayScale = 0.95;          // 衰减参数0.95
         double StepFactor = 0.2;          // 步长因子0.02
         double Temperature = 100;          // 初始温度
@@ -135,7 +136,18 @@ namespace SimulateAnneling {
         double entropyValue = 0;
         int[] countPixel = new int[256];
         Texture2D newTex;
+        double tempEntropy;
 
+        Color currColor;
+        private void Start()
+        {
+            forward = new Texture2D(textureWidth, textureHeight);
+            back = new Texture2D(textureWidth, textureHeight);
+            up = new Texture2D(textureWidth, textureHeight);
+            bottom = new Texture2D(textureWidth, textureHeight);
+            left = new Texture2D(textureWidth, textureHeight);
+            right = new Texture2D(textureWidth, textureHeight);
+        }
         void Update()
         {
             if (Input.GetKeyDown(KeyCode.Alpha1))
@@ -260,60 +272,67 @@ namespace SimulateAnneling {
                     default:
                         break;
                 }
-                for (int i = 0; i < 255; i++)
-                {
-                    countPixel[i] = 0;
-                }
-                PixelNum = 0;
-                entropyValue = 0;
-                Color currColor;
-                int ret = 0;
-                for (int i = 0; i < newTex.width; i++)
-                {
-                    for (int j = 0; j < newTex.height; j++)
-                    {
-                        currColor = newTex.GetPixel(i, j);
-                        ret = (int)(currColor.r * 0.299f * 255 + currColor.g * 0.587f * 255 + currColor.b * 0.114f * 255);
-                        PixelNum += 1;
-                        countPixel[ret] += 1;
-                    }
-                }
-                double tempP = 0, tempE = 0;
-                for (int i = 0; i < 255; i++)
-                {
-                    tempP = (float)countPixel[i] / (float)PixelNum;
-                    if (tempP != 0)
-                    {
-                        tempE = tempP * Math.Log(tempP);
-                        entropyValue += tempE;
-                    }
-                }
-                //print("the entropyValue is : " + -entropyValue);
-                return -entropyValue;
+                return EntropyPerT(newTex);
             }
-            else {
+            else
+            {
                 TestLight.transform.position = new Vector3((float)x, 2.5f, (float)z);
                 CenterCam.Render();
                 CenterCam.RenderToCubemap(centerCubemap);
-                Color[] CubrmapColors = centerCubemap.GetPixels(CubemapFace.PositiveZ);
-                forward.SetPixels(CubrmapColors);
-                CubrmapColors = centerCubemap.GetPixels(CubemapFace.PositiveX);
-                right.SetPixels(CubrmapColors);
-                CubrmapColors = centerCubemap.GetPixels(CubemapFace.PositiveY);
-                up.SetPixels(CubrmapColors);
-                CubrmapColors = centerCubemap.GetPixels(CubemapFace.NegativeZ);
-                back.SetPixels(CubrmapColors);
-                CubrmapColors = centerCubemap.GetPixels(CubemapFace.NegativeX);
-                left.SetPixels(CubrmapColors);
-                CubrmapColors = centerCubemap.GetPixels(CubemapFace.NegativeY);
-                bottom.SetPixels(CubrmapColors);
+                Color[] CubemapColors = centerCubemap.GetPixels(CubemapFace.PositiveZ);
+                forward.SetPixels(CubemapColors);
+                forward_e = EntropyPerT(forward);
+                CubemapColors = centerCubemap.GetPixels(CubemapFace.PositiveX);
+                right.SetPixels(CubemapColors);
+                right_e = EntropyPerT(right);
+                CubemapColors = centerCubemap.GetPixels(CubemapFace.PositiveY);
+                up.SetPixels(CubemapColors);
+                up_e = EntropyPerT(up);
+                CubemapColors = centerCubemap.GetPixels(CubemapFace.NegativeZ);
+                back.SetPixels(CubemapColors);
+                back_e = EntropyPerT(back);
+                CubemapColors = centerCubemap.GetPixels(CubemapFace.NegativeX);
+                left.SetPixels(CubemapColors);
+                left_e = EntropyPerT(left);
+                CubemapColors = centerCubemap.GetPixels(CubemapFace.NegativeY);
+                bottom.SetPixels(CubemapColors);
+                bottom_e = EntropyPerT(bottom);
 
-
-
-
+                entropyValue = forward_e * forward_w + back_e * back_w + left_e * left_w + right_e * right_w + up_e * up_w + bottom_e * bottom_w;
                 return -entropyValue;
             }
           
+        }
+
+        double EntropyPerT(Texture2D tex) {
+            PixelNum = 0;
+            tempEntropy = 0;
+            for (int i = 0; i < 255; i++)
+            {
+                countPixel[i] = 0;
+            }
+            int ret = 0;
+            for (int i = 0; i < tex.width; i++)
+            {
+                for (int j = 0; j < tex.height; j++)
+                {
+                    currColor = tex.GetPixel(i, j);
+                    ret = (int)(currColor.r * 0.299f * 255 + currColor.g * 0.587f * 255 + currColor.b * 0.114f * 255);
+                    PixelNum += 1;
+                    countPixel[ret] += 1;
+                }
+            }
+            double tempP = 0, tempE = 0;
+            for (int i = 0; i < 255; i++)
+            {
+                tempP = (float)countPixel[i] / (float)PixelNum;
+                if (tempP != 0)
+                {
+                    tempE = tempP * Math.Log(tempP);
+                    tempEntropy += tempE;
+                }
+            }
+            return tempEntropy;
         }
 
         Texture2D ConvertRTtoT2D(RenderTexture rt)
