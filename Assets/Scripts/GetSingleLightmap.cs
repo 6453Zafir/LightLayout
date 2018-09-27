@@ -16,6 +16,8 @@ public class GetSingleLightmap : MonoBehaviour {
         RT.enableRandomWrite = true;
         RT.Create();
     }
+
+    //单个物体包围盒
     public Bounds CalcAABB(List<MeshRenderer> meshes)
     {
         var boxColliders = meshes.Select(x => x.bounds).ToList();
@@ -26,9 +28,31 @@ public class GetSingleLightmap : MonoBehaviour {
         }
         return aabb;
     }
+    //所有子物体包围盒
+    public Bounds CalcBounds(GameObject GO)
+    {
 
-    // Update is called once per frame
-    void Update () {
+        Vector3 center = Vector3.zero;
+
+        foreach (Transform child in GO.transform)
+        {
+            center += child.GetComponent<MeshRenderer>().bounds.center;
+        }
+        center /= GO.transform.childCount; //center is average center of children
+
+        //Now you have a center, calculate the bounds by creating a zero sized 'Bounds', 
+        Bounds bounds = new Bounds(center, Vector3.zero);
+
+        foreach (Transform child in GO.transform)
+        {
+            bounds.Encapsulate(child.GetComponent<MeshRenderer>().bounds);
+        }
+        return bounds;
+    }
+
+
+// Update is called once per frame
+void Update () {
         if (TestGO == null) return;
         var allRenderer = GameObject.FindObjectsOfType<MeshRenderer>();
 
@@ -46,7 +70,9 @@ public class GetSingleLightmap : MonoBehaviour {
             gBufferCamera = new GameObject("GBufferCamera").AddComponent<Camera>();
         else
             gBufferCamera = go.GetComponent<Camera>();
-        var aabb = CalcAABB(new List<MeshRenderer>() { TestGO.GetComponentInChildren<MeshRenderer>() });
+       // var aabb = CalcAABB(new List<MeshRenderer>() { TestGO.GetComponentInChildren<MeshRenderer>() });
+        //var aabb = CalcAABB(new List<MeshRenderer>() { TestGO.GetComponentsInChildren<MeshRenderer>()});
+        var aabb = CalcBounds(TestGO);
         var maxExtend = Mathf.Max(aabb.extents.x, aabb.extents.y, aabb.extents.z); ;
         gBufferCamera.orthographic = true;
         gBufferCamera.aspect = 1;
@@ -66,7 +92,8 @@ public class GetSingleLightmap : MonoBehaviour {
         cameraTransform.position = aabb.center - cameraTransform.forward * maxExtend;
         gBufferCamera.targetTexture = RT;
         Shader.SetGlobalTexture("_Lightmap", Lightmap);
-        Shader.SetGlobalVector("_LightmspST", TestGO.GetComponent<MeshRenderer>().lightmapScaleOffset);
+        Shader.SetGlobalVector("_LightmspST", TestGO.GetComponentInChildren<MeshRenderer>().lightmapScaleOffset);
+        //Shader.SetGlobalVector("_LightmspST", TestGO.GetComponent<MeshRenderer>().lightmapScaleOffset);
         gBufferCamera.RenderWithShader(GetSingleLightmapShader, "");
     }
 }
