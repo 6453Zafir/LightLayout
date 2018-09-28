@@ -59,14 +59,15 @@ public class GetSingleLightmap : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            for (int i = 0; i < FatherGO.transform.childCount; i++)
-            {
-                if (FatherGO.transform.GetChild(i).GetComponent<MeshRenderer>() != null)
-                {
-                    GameObject tempChild = FatherGO.transform.GetChild(i).gameObject;
-                    getSingleLightmap(tempChild);
-                }
-            }
+            getSingleLightmap(FatherGO);
+            //for (int i = 0; i < FatherGO.transform.childCount; i++)
+            //{
+            //    if (FatherGO.transform.GetChild(i).GetComponent<MeshRenderer>() != null)
+            //    {
+            //        GameObject tempChild = FatherGO.transform.GetChild(i).gameObject;
+            //        getSingleLightmap(tempChild);
+            //    }
+            //}
         }
     }
 
@@ -74,6 +75,7 @@ public class GetSingleLightmap : MonoBehaviour
     {
 
         if (ObToLightmap == null) return null;
+        /*新建空的lightmap以写入
         var LightMapTexture = new Texture2D(512, 512, TextureFormat.ARGB32, false);
         var fillColorArray = LightMapTexture.GetPixels();
 
@@ -85,16 +87,17 @@ public class GetSingleLightmap : MonoBehaviour
         LightMapTexture.SetPixels(fillColorArray);
 
         LightMapTexture.Apply();
+        */
 
-
-        //var allRenderer = GameObject.FindObjectsOfType<MeshRenderer>();
-
-        //foreach (var meshRenderer in allRenderer)
-        //{
-        //    meshRenderer.gameObject.SetActive(false);
-        //}
-
-        //ObToLightmap.SetActive(true);
+        var allRenderer = GameObject.FindObjectsOfType<MeshRenderer>();
+        foreach (var meshRenderer in allRenderer)
+        {
+            meshRenderer.gameObject.SetActive(false);
+        }
+        ObToLightmap.SetActive(true);
+        for (int i = 0; i< ObToLightmap.transform.childCount; i++) {
+            ObToLightmap.transform.GetChild(i).gameObject.SetActive(true);
+        }
 
         var go = GameObject.Find("GBufferCamera");
         Camera gBufferCamera = null;
@@ -102,8 +105,8 @@ public class GetSingleLightmap : MonoBehaviour
             gBufferCamera = new GameObject("GBufferCamera").AddComponent<Camera>();
         else
             gBufferCamera = go.GetComponent<Camera>();
-        var aabb = CalcAABB(new List<MeshRenderer>() { ObToLightmap.GetComponent<MeshRenderer>() });
-        //var aabb = CalcBounds(TestGO);
+       // var aabb = CalcAABB(new List<MeshRenderer>() { ObToLightmap.GetComponent<MeshRenderer>() });
+        var aabb = CalcBounds(FatherGO);
         var maxExtend = Mathf.Max(aabb.extents.x, aabb.extents.y, aabb.extents.z); ;
         gBufferCamera.orthographic = true;
         //gBufferCamera.aspect = 1;
@@ -125,7 +128,7 @@ public class GetSingleLightmap : MonoBehaviour
         Shader.SetGlobalTexture("_Lightmap", Lightmap);
         //Shader.SetGlobalVector("_LightmspST", ObToLightmap.GetComponent<MeshRenderer>().lightmapScaleOffset);
         gBufferCamera.RenderWithShader(GetSingleLightmapShader, "");
-        return (ConvertRTtoT2D(RT));
+        return ConvertRTtoT2D(RT);
     }
 
     Texture2D ConvertRTtoT2D(RenderTexture rt)

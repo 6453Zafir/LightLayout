@@ -55,7 +55,7 @@ Shader "LightMapper/GetSingleLM"
             fixed4 frag(v2f i) : SV_Target  
             { 		
 
-				float4 color = tex2D(  _Lightmap , i.uv2* unity_LightmapST.xy + unity_LightmapST.zw);
+				float4 color = tex2D( _Lightmap , i.uv2* unity_LightmapST.xy + unity_LightmapST.zw);
 				return float4(color.xyz, 1);
             }  
             ENDCG  
