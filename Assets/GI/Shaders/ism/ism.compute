@@ -1,0 +1,111 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+#pragma enable_d3d11_debug_symbols
+
+#define COMPUTE_SHADER
+
+#include "../GBuffer.cginc"
+#include "./random.cginc"
+#include "./ism_util.cginc"
+#include "../Polygon.cginc"
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+RWTexture2D<float4> _Ism;
+RWTexture2D<float> _ZBuffer;
+
+StructuredBuffer<float3> _VplNormal;
+StructuredBuffer<float3> _VplPosition;
+float2 _ZFar;
+int _IsmCount;
+int _GBufferTexSize;
+int _ShadowMapSize;
+
+void SetPixel(int2 uv, float depth)
+{
+	//uv.y = _ShadowMapSize - uv.y;
+	//ZWrite & ZTest
+	float zBuffer = _ZBuffer[uv];
+	if(depth < zBuffer)
+	{
+		_Ism[uv] = depth;
+		_ZBuffer[uv] = depth;
+	}
+}
+int _SpeID;
+[numthreads(32,32,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{		
+	bool isLegal;
+	float3 lumelPos = SampleGBufferPosition(id.xy, _GBufferTexSize, isLegal);
+	//_LightMap[id.xy] = float4(lumelPos.rgb, 1);
+	//return;
+	if(!isLegal)
+	{
+		return;
+	}
+
+	float3 lumelNormal = SampleGBufferNormal(id.xy, _GBufferTexSize);
+	
+
+	int ismIndices1d = 16;//32;
+
+	int vplID;
+	float3 vplPos;
+	float3 vplNormal;
+
+	for(int i = 0; i < _IsmCount; ++i)
+	{
+		int vplID_ = (id.x + (id.y)*2048+i)%_IsmCount;
+	//	
+		float3 vplPos_ = _VplPosition[vplID_];
+		float3 vplNormal_ = _VplNormal[vplID_];
+		if(IsBelowPlane(lumelPos, vplPos_, vplNormal_))
+		{
+			continue;
+		}
+		else
+		{
+			vplID = vplID_;
+			vplPos=vplPos_;
+			vplNormal=vplNormal_;
+			break;
+		}
+		return;
+	}
+	vplPos += 0.1 * vplNormal;
+	//vplID=4;
+	float3 vertToLightWS = lumelPos - vplPos;
+	float dist2Camera = length(vertToLightWS);
+
+	//if(vertToLightWS.z < 0 ) return;
+	//需要裁剪？
+	if(dot(vplNormal, vertToLightWS) < 0 || dot(lumelNormal, -vertToLightWS)<0 || dist2Camera < 1) return ;
+	//float4 pos = float4(paraboloid_project(vertToLightWS, dist2Camera, vplNormal, _ZFar.x, vplID, ismIndices1d, true), 1.0);
+	float4 pos = float4(sphericalMap(vertToLightWS, vplNormal, _ZFar.x,vplID, ismIndices1d), 1.0);
+	//pos.z = 1 - pos.z;
+//	if(pos.x < 0 || pos.y < 0) return;
+	//float maxDist = max(max(length(centerPos - p[0].pos), length(centerPos - p[1].pos)), length(centerPos - p[2].pos));
+//	dist2Camera = max(10, dist2Camera);
+	float r = 1 / dist2Camera/20;///11：看效果调出来的
+		r = (pos.z) * 1;///11：看效果调出来的
+	
+	//绘制一个矩形空间
+	int radius = r * _ShadowMapSize;
+	int maxR = 10;
+	radius = radius < maxR ? radius : maxR;
+	//[0,1]->[0,_ShadowMapSize]
+	pos.xy*= int2(_ShadowMapSize,_ShadowMapSize);
+
+	//左下角开始绘制
+	int2 lb = pos.xy - int2(radius, radius);
+	int2 startPos = lb;
+	//radius=4;
+	for(int y = 0; y < radius; ++y)
+	{
+		for(int x = 0; x < radius; ++x)
+		{
+			SetPixel(startPos + float2(x,y), pos.z);
+		}
+	}
+	
+}

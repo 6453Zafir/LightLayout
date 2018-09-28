@@ -1,0 +1,39 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+Texture2D<float4> HDR;
+RWTexture2D<float4> RGBM;
+
+half4 UnityEncodeRGBM (half3 color, float maxRGBM)
+{
+    float kOneOverRGBMMaxRange = 1.0 / maxRGBM;
+    const float kMinMultiplier = 2.0 * 1e-2;
+
+    float3 rgb = color * kOneOverRGBMMaxRange;
+    float alpha = max(max(rgb.r, rgb.g), max(rgb.b, kMinMultiplier));
+    alpha = ceil(alpha * 255.0) / 255.0;
+
+    // Division-by-zero warning from d3d9, so make compiler happy.
+    alpha = max(alpha, kMinMultiplier);
+
+    return half4(rgb / alpha, alpha);
+}
+
+float4 RGBMEncode( float3 color ) 
+{
+  float4 rgbm;
+  color *= 1.0 / 6.0;
+  rgbm.a = saturate( max( max( color.r, color.g ), max( color.b, 1e-6 ) ) );
+  rgbm.a = ceil( rgbm.a * 255.0 ) / 255.0;
+  rgbm.rgb = color / rgbm.a;
+  return rgbm;
+}
+
+[numthreads(32,32,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+	RGBM[id.xy] = UnityEncodeRGBM(HDR[id.xy].rgb, 6);
+	//Result[id.xy] = HDR[id.xy].rgba;
+}

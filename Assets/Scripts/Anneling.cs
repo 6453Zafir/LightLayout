@@ -97,18 +97,42 @@ namespace SimulateAnneling {
 
     public class Anneling : MonoBehaviour
     {
-       // public static double entropy = 0;
+        /// <summary>
+        /// 测试用单一点光源
+        /// </summary>
         public GameObject TestLight;
+        /// <summary>
+        /// 获得单一视角截图的camera
+        /// </summary>
         public Camera TestCam;
+        /// <summary>
+        /// 获得cubemap的camera
+        /// </summary>
         public Camera CenterCam;
+        /// <summary>
+        /// 基于CenterCam得出的cubemap
+        /// </summary>
         public Cubemap centerCubemap;
+        /// <summary>
+        /// cubemap每个面的贴图宽高
+        /// </summary>
         int textureWidth=256, textureHeight = 256;
         Texture2D up, bottom, left, right, back, forward;
         double up_e, bottom_e, left_e, right_e, back_e, forward_e ;
+        /// <summary>
+        /// cubemap各面权重
+        /// </summary>
         double up_w = 0.05f, bottom_w = 0.35f, left_w = 0.15f, right_w = 0.15, forward_w =0.15f, back_w = 0.15f;
 
-        private string LightMapPath = "Resources/Scene/bedroom";
-        public LightmapData ld;
+        public BakerWithIsm BWIBaker;
+
+        public GameObject FatherGO;
+        public RenderTexture RT;
+        public Texture2D Lightmap;
+        public Shader GetSingleLightmapShader;
+
+
+       // private string LightMapPath = "Resources/Scene/bedroom";
         //x的移动空间0~-4.53
         const double XMAX = 3;
         const double XMIN = 0;
@@ -147,6 +171,12 @@ namespace SimulateAnneling {
             bottom = new Texture2D(textureWidth, textureHeight);
             left = new Texture2D(textureWidth, textureHeight);
             right = new Texture2D(textureWidth, textureHeight);
+
+
+
+            RT = new RenderTexture(1024, 1024, 24, RenderTextureFormat.ARGB32);
+            RT.enableRandomWrite = true;
+            RT.Create();
         }
         void Update()
         {
@@ -167,6 +197,10 @@ namespace SimulateAnneling {
             if (Input.GetKeyDown(KeyCode.Alpha4))
             {
                 SAOptimizeLighting(4);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha5))
+            {
+                SAOptimizeLighting(5);
             }
         }
 
@@ -248,63 +282,66 @@ namespace SimulateAnneling {
         /// <param name="z"></param>
         /// <returns></returns>
         double GetEntropy(int FunNum, double x, double z) {
-            if (FunNum < 4)
+
+            switch (FunNum)
             {
-                switch (FunNum)
-                {
-                    case 1:
-                        //相机的矩形视角图
-                        TestLight.transform.position = new Vector3((float)x, 2.5f, (float)z);
-                        TestCam.Render();
-                        newTex = ConvertRTtoT2D(TestCam.targetTexture);
-                        break;
-                    case 2:
-                        //位于场景中间相机视角的全景图
+                case 1:
+                    //相机的矩形视角图
+                    TestLight.transform.position = new Vector3((float)x, 2.5f, (float)z);
+                    TestCam.Render();
+                    newTex = ConvertRTtoT2D(TestCam.targetTexture);
+                    return EntropyPerT(newTex);
+                case 2:
+                    //位于场景中间相机视角的全景图
+                    TestLight.transform.position = new Vector3((float)x, 2.5f, (float)z);
+                    CenterCam.Render();
+                    newTex = ConvertRTtoT2D(CenterCam.targetTexture);
+                    return EntropyPerT(newTex);
+                case 3:
+                    //lightMap
+                    TestLight.transform.position = new Vector3((float)x, 2.5f, (float)z);
+                    newTex = ConvertEXRtoT2D();
+                    return EntropyPerT(newTex);
+                case 4:
+                    {  
+                        //给cubemap的不同面加权
                         TestLight.transform.position = new Vector3((float)x, 2.5f, (float)z);
                         CenterCam.Render();
-                        newTex = ConvertRTtoT2D(CenterCam.targetTexture);
-                        break;
-                    case 3:
-                        //lightMap
-                        TestLight.transform.position = new Vector3((float)x, 2.5f, (float)z);
-                        newTex = ConvertEXRtoT2D();
-                        break;
-                    default:
-                        break;
-                }
-                return EntropyPerT(newTex);
-            }
-            else
-            {
-                TestLight.transform.position = new Vector3((float)x, 2.5f, (float)z);
-                CenterCam.Render();
-                CenterCam.RenderToCubemap(centerCubemap);
-                Color[] CubemapColors = centerCubemap.GetPixels(CubemapFace.PositiveZ);
-                forward.SetPixels(CubemapColors);
-                forward_e = EntropyPerT(forward);
-                CubemapColors = centerCubemap.GetPixels(CubemapFace.PositiveX);
-                right.SetPixels(CubemapColors);
-                right_e = EntropyPerT(right);
-                CubemapColors = centerCubemap.GetPixels(CubemapFace.PositiveY);
-                up.SetPixels(CubemapColors);
-                up_e = EntropyPerT(up);
-                CubemapColors = centerCubemap.GetPixels(CubemapFace.NegativeZ);
-                back.SetPixels(CubemapColors);
-                back_e = EntropyPerT(back);
-                CubemapColors = centerCubemap.GetPixels(CubemapFace.NegativeX);
-                left.SetPixels(CubemapColors);
-                left_e = EntropyPerT(left);
-                CubemapColors = centerCubemap.GetPixels(CubemapFace.NegativeY);
-                bottom.SetPixels(CubemapColors);
-                bottom_e = EntropyPerT(bottom);
+                        CenterCam.RenderToCubemap(centerCubemap);
+                        Color[] CubemapColors = centerCubemap.GetPixels(CubemapFace.PositiveZ);
+                        forward.SetPixels(CubemapColors);
+                        forward_e = EntropyPerT(forward);
+                        CubemapColors = centerCubemap.GetPixels(CubemapFace.PositiveX);
+                        right.SetPixels(CubemapColors);
+                        right_e = EntropyPerT(right);
+                        CubemapColors = centerCubemap.GetPixels(CubemapFace.PositiveY);
+                        up.SetPixels(CubemapColors);
+                        up_e = EntropyPerT(up);
+                        CubemapColors = centerCubemap.GetPixels(CubemapFace.NegativeZ);
+                        back.SetPixels(CubemapColors);
+                        back_e = EntropyPerT(back);
+                        CubemapColors = centerCubemap.GetPixels(CubemapFace.NegativeX);
+                        left.SetPixels(CubemapColors);
+                        left_e = EntropyPerT(left);
+                        CubemapColors = centerCubemap.GetPixels(CubemapFace.NegativeY);
+                        bottom.SetPixels(CubemapColors);
+                        bottom_e = EntropyPerT(bottom);
 
-                entropyValue = forward_e * forward_w + back_e * back_w + left_e * left_w + right_e * right_w + up_e * up_w + bottom_e * bottom_w;
-                return -entropyValue;
+                        entropyValue = forward_e * forward_w + back_e * back_w + left_e * left_w + right_e * right_w + up_e * up_w + bottom_e * bottom_w;
+                        return -entropyValue;
+                    }
+                case 5:
+                    BWIBaker.Init();
+                    BWIBaker.SaveLightmapBeforePostprocessing();
+                    return 0;
+                default:
+                    return 0;
             }
-          
         }
 
-        double EntropyPerT(Texture2D tex) {
+        //获得每个cubemap面上的熵
+        double EntropyPerT(Texture2D tex)
+        {
             PixelNum = 0;
             tempEntropy = 0;
             for (int i = 0; i < 255; i++)
@@ -335,6 +372,91 @@ namespace SimulateAnneling {
             return tempEntropy;
         }
 
+        //获得单一传入家具的lightmap
+        Texture2D getSingleLightmap(GameObject ObToLightmap)
+        {
+
+            if (ObToLightmap == null) return null;
+            /*新建空的lightmap以写入
+            var LightMapTexture = new Texture2D(512, 512, TextureFormat.ARGB32, false);
+            var fillColorArray = LightMapTexture.GetPixels();
+
+            for (var i = 0; i < fillColorArray.Length; ++i)
+            {
+                fillColorArray[i] = Color.black;
+            }
+
+            LightMapTexture.SetPixels(fillColorArray);
+
+            LightMapTexture.Apply();
+            */
+
+            var allRenderer = GameObject.FindObjectsOfType<MeshRenderer>();
+            foreach (var meshRenderer in allRenderer)
+            {
+                meshRenderer.gameObject.SetActive(false);
+            }
+            ObToLightmap.SetActive(true);
+            for (int i = 0; i < ObToLightmap.transform.childCount; i++)
+            {
+                ObToLightmap.transform.GetChild(i).gameObject.SetActive(true);
+            }
+
+            var go = GameObject.Find("GBufferCamera");
+            Camera gBufferCamera = null;
+            if (go == null)
+                gBufferCamera = new GameObject("GBufferCamera").AddComponent<Camera>();
+            else
+                gBufferCamera = go.GetComponent<Camera>();
+            // var aabb = CalcAABB(new List<MeshRenderer>() { ObToLightmap.GetComponent<MeshRenderer>() });
+            var aabb = CalcBounds(FatherGO);
+            var maxExtend = Mathf.Max(aabb.extents.x, aabb.extents.y, aabb.extents.z); ;
+            gBufferCamera.orthographic = true;
+            //gBufferCamera.aspect = 1;
+            //gBufferCamera.orthographicSize = maxExtend * 2;
+            gBufferCamera.allowMSAA = false;
+            gBufferCamera.allowHDR = false;
+
+            gBufferCamera.enabled = false;
+            gBufferCamera.clearFlags = CameraClearFlags.SolidColor;
+            gBufferCamera.backgroundColor = Color.clear;
+            //gBufferCamera.farClipPlane = maxExtend * 2;
+            var cameraTransform = gBufferCamera.transform;
+            //cameraTransform.position = aabb.center;
+            //cameraTransform.forward = aabb.extents.x <= aabb.extents.y
+            //    ? (aabb.extents.x <= aabb.extents.z ? new Vector3(1, 0, 0) : new Vector3(0, 0, 1))
+            //    : (aabb.extents.y <= aabb.extents.z ? new Vector3(0, 1, 0) : new Vector3(0, 0, 1));
+            //cameraTransform.position = aabb.center - cameraTransform.forward * maxExtend;
+            gBufferCamera.targetTexture = RT;
+            Shader.SetGlobalTexture("_Lightmap", Lightmap);
+            //Shader.SetGlobalVector("_LightmspST", ObToLightmap.GetComponent<MeshRenderer>().lightmapScaleOffset);
+            gBufferCamera.RenderWithShader(GetSingleLightmapShader, "");
+            return ConvertRTtoT2D(RT);
+        }
+
+        //所有子物体包围盒
+        public Bounds CalcBounds(GameObject GO)
+        {
+
+            Vector3 center = Vector3.zero;
+
+            foreach (Transform child in GO.transform)
+            {
+                center += child.GetComponent<MeshRenderer>().bounds.center;
+            }
+            center /= GO.transform.childCount; //center is average center of children
+
+            //Now you have a center, calculate the bounds by creating a zero sized 'Bounds', 
+            Bounds bounds = new Bounds(center, Vector3.zero);
+
+            foreach (Transform child in GO.transform)
+            {
+                bounds.Encapsulate(child.GetComponent<MeshRenderer>().bounds);
+            }
+            return bounds;
+        }
+
+        //将renderTexture转为Texture2D
         Texture2D ConvertRTtoT2D(RenderTexture rt)
         {
             Texture2D tex = new Texture2D(rt.width, rt.height, TextureFormat.RGB24, false);
@@ -344,7 +466,7 @@ namespace SimulateAnneling {
             return tex;
         }
 
-
+        //将EXR转为Texture2D
         Texture2D ConvertEXRtoT2D()
         {
             //Lightmapping.bakedGI = true;
@@ -356,6 +478,8 @@ namespace SimulateAnneling {
             Texture2D tex = LightmapSettings.lightmaps[0].lightmapColor;
             return tex;
         }
+
+
     } 
 }
 

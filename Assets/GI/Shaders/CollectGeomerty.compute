@@ -1,0 +1,14 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+Texture2D<float4> _From;
+RWTexture2D<float4> _Dst;
+
+[numthreads(32, 32, 1)]
+void CSMain(uint3 id : SV_DispatchThreadID)
+{
+	if( (_From[id.xy].a > 0.1f) && (_Dst[id.xy].a < 0.1f))
+	{ 
+		_Dst[id.xy] = _From[id.xy];
+	}
+}

@@ -1,0 +1,81 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 1164207884996888}
+  m_IsPrefabParent: 1
+--- !u!1 &1164207884996888
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4217756953133996}
+  - component: {fileID: 114596769842801432}
+  m_Layer: 0
+  m_Name: ISMBaker
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4217756953133996
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1164207884996888}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.31064415, y: -1.3561671, z: 2.47265}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114596769842801432
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1164207884996888}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e61d34762a4af048923af6cd40e3a82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  LightMapSize: 1024
+  ShadowMapSize: 2048
+  TotalSampleCount: 10000
+  IndirectWight: 1
+  DirectWight: 1
+  Bounce: 1
+  DirectLightPass: {fileID: 7200000, guid: 344192851dd7e7c4b91c7d064dc91dec, type: 3}
+  IndirectLightPass: {fileID: 7200000, guid: 72c1a902a71d07c40b1400cb1198298b, type: 3}
+  IsmPass: {fileID: 7200000, guid: 02d70e1a149cbbb4592d94a3c80a4ac6, type: 3}
+  AccumlatePass: {fileID: 7200000, guid: b534ad3dd556fa149a1f02f8ef98b5c3, type: 3}
+  SceneParamater: {fileID: 0}
+  EncodeRgbm: {fileID: 7200000, guid: 17cc81b0b5a468240bd749dd98052b15, type: 3}
+  FloodIllegal: {fileID: 7200000, guid: cb80046e5caaf1040983ef52f56c9010, type: 3}
+  CollectGeomerty: {fileID: 7200000, guid: 476456ac920bd8f48a93569bca7c7c7c, type: 3}
+  SaveGBufferTexture: 0
+  SaveLightmapBeforePostprocessing: 0
+  SaveLightmapAfterPostprocessing: 0
+  BuildDirectLight: 0
+  BuildIndirectLight: 1
+  ISMType: 0
+  ClusterStage: 0
+  LightmapStage: 0
+  SpeID: 100
+  EnableHDR: 1
+  LightmapData: []
+  ShowPolygonLight: 0
+  ShowPointLight: 0
+  LineMaterial: {fileID: 0}

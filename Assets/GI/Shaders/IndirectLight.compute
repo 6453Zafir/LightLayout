@@ -1,0 +1,168 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+#pragma enable_d3d11_debug_symbols
+
+#define COMPUTE_SHADER
+
+#include "./PCSS.cginc"
+#include "./GBuffer.cginc"
+#include "./Polygon.cginc"
+/* Output */
+RWTexture2D<float4> _LightMap;
+//RWStructuredBuffer<float3> _OutputGBufferPos;
+/* Input */
+StructuredBuffer<float3> _PolygonHull;
+
+int _LightMapSize;
+float3 _PolygonCenter;
+float3 _PolygonNormal;
+float3  _PolygonTotalFlux;
+int _PolygonVertexCount;
+
+#define pi 3.14159265358979
+
+
+
+void EarlyExit(uint3 id)
+{
+	_LightMap[id.xy] = float4(0,0,0,0);
+}
+
+inline float MaxLightWidth(float3 clippedRect[10], int vertexCount)
+{
+	float max = 0;
+	for(int i = 0; i < vertexCount; ++i)
+	{
+		float dist = distance(clippedRect[0], clippedRect[(i+1)%vertexCount]);
+		if(dist > max)
+		{
+			max = dist;
+		}
+	}
+	return max;
+}
+
+inline float MaxLightWidth(StructuredBuffer<float3> clippedRect, int vertexCount)
+{
+	float max = 0;
+	for(int i = 0; i < vertexCount; ++i)
+	{
+		float dist = distance(clippedRect[0], clippedRect[(i+1)%vertexCount]);
+		if(dist > max)
+		{
+			max = dist;
+		}
+	}
+	return max;
+}
+
+[numthreads(32,32,1)]
+void CSMain(uint3 id : SV_DispatchThreadID)
+{
+	bool isLegal;
+
+	float3 lumelPos = SampleGBufferPosition(id.xy, _LightMapSize, isLegal);
+	//_LightMap[id.xy] = float4(lumelPos.rgb, 1);
+	//return;
+	if(!isLegal)
+	{
+		EarlyExit(id);
+		return;
+	}
+
+	float3 lumelNormal = SampleGBufferNormal(id.xy, _LightMapSize);
+
+	if(IsBelowPlane(lumelPos, _PolygonNormal, _PolygonCenter + 0.0*_PolygonNormal))
+	{
+		EarlyExit(id);
+		return;
+	}
+	//if(id.x < 100 && id.y < 1000) _OutputGBufferPos[id.x+id.y*100] = lumelPos;
+	//2.裁剪矩形
+	float3 clippedRect[10];
+	int vertexCount = 0;
+	
+	ClipRectBelowLumel(lumelNormal, lumelPos, _PolygonHull, _PolygonNormal, _PolygonVertexCount, clippedRect, vertexCount);
+	if (vertexCount == 0)
+	{
+		EarlyExit(id);
+		return;
+	}
+
+	//重新计算裁剪后多边形中心
+    float3 clippedCenter = float3(0.f,0.f,0.f);
+    for (int i = 0; i < vertexCount; ++i)
+    {
+		clippedCenter += clippedRect[i];
+    }
+    clippedCenter /= vertexCount;
+
+	//3.计算深度
+	float3 VertToLightWS = lumelPos - _PolygonCenter;
+
+	float lightWidth = MaxLightWidth(_PolygonHull, _PolygonVertexCount)/2;
+
+	float ShadowFactor =  PCSS(VertToLightWS, lightWidth, lumelNormal);
+	//float ShadowFactor = ComputeShadowFactor(_CubeShadowMap, my_linear_clamp_sampler, VertToLightWS);
+	if(ShadowFactor>0.01f) 
+		ShadowFactor = clamp(ShadowFactor, 0.5f, 1);
+	if (ShadowFactor == 0)
+	{
+		EarlyExit(id);
+		return;
+	}
+
+	float clippedArea = GetPolygonArea(vertexCount, clippedRect);
+	float originArea = GetPolygonArea(_PolygonVertexCount, _PolygonHull);
+
+	//还尼玛会有polygonlight面积过小的情况 当成点光源算formfactor
+	
+	if (clippedArea < 0.1)
+	{
+		if(originArea < 0.1)
+		{
+			//3.计算深度
+			float3 light2lumel = lumelPos - clippedCenter;
+
+			float cos1 = dot(lumelNormal, normalize(-light2lumel));
+			if(cos1 >= 0)
+			{
+				float geometryTerm = cos1 / length(light2lumel);
+				geometryTerm = clamp(geometryTerm, 0, 0.1f);
+				float3 irradiance = _PolygonTotalFlux * geometryTerm *ShadowFactor;
+				_LightMap[id.xy] = float4(irradiance.rgb, 1);		
+			}
+			return;
+		}
+		_LightMap[id.xy] = float4(0,0,0,0);
+		return;
+	}
+	
+	//4.formfactor 尼玛在这里已经包含了光线衰弱
+	
+	float FormFactor = 0;
+	
+	
+	for (int idx = 0; idx < vertexCount; ++idx)
+	{
+		float3 vector1 = normalize(clippedRect[idx] - lumelPos);
+		float3 vector2 = normalize(clippedRect[(idx + 1) % vertexCount] - lumelPos);
+		float cosTheta = dot(vector1, vector2);
+		cosTheta = clamp(cosTheta, -0.9999f, 0.9999f);
+		float theta = acos(cosTheta);
+		float temp = cross(vector1, vector2).z / sin(theta) *  theta;
+		FormFactor += abs(temp);
+	}
+	
+	FormFactor = FormFactor/pi;
+	
+	//clamp FormFactor http://sjbrown.co.uk/2011/05/09/virtual-point-light-bias-compensation/
+	FormFactor = clamp(FormFactor, 0, 0.2);
+
+	//5.乘起来
+	float3 irradiance = _PolygonTotalFlux* ShadowFactor * FormFactor / originArea * clippedArea;
+	//float3 irradiance = 1 * ShadowFactor * 1 / 1;
+
+	_LightMap[id.xy] = float4(irradiance.rgb, 1);	
+	
+}

@@ -1,0 +1,182 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+#include "PCSS.cginc"
+struct Lumel
+{
+	//local position map to this lumel
+	float3 Position;
+
+	//lumel normal (use for calc N.L)
+	float3 Normal;
+
+	bool IsLegalPosition;
+};
+
+/* Output */
+RWTexture2D<float4> _LightMap;
+
+/* Input */
+StructuredBuffer<Lumel> _Lumels;
+
+
+int _LightMapSize;
+
+float3 _LightPos;
+float4 _LightIntensity;
+float _LightRange;
+
+#define pi 3.14159265358979
+
+float GetPolygonArea(int n, float3 p[10])
+{
+	float area = 0;
+	for (int i = 1; i <= n - 2; i++)
+		area += length(cross(p[i] - p[0], p[i + 1] - p[0]));
+	return area / 2;
+}
+
+float GetPolygonArea(int n, StructuredBuffer<float3>  p)
+{
+	float area = 0;
+	for (int i = 1; i <= n - 2; i++)
+		area += length(cross(p[i] - p[0], p[i + 1] - p[0]));
+	return area / 2;
+}
+
+inline bool IsBelowPlane(float3 p, float3 planeNormal, float3 planeCenter)
+{
+	float t = dot(p - planeCenter, normalize(planeNormal));
+	if (t < 0.03f) return true;
+	return false;
+}
+
+inline float3 GetPlaneLineIntersect(float3 planeCenter, float3 planeNormal, float3 p0, float3 dirToPlane)
+{
+	float3 v0Minp0 = planeCenter - p0;
+	float s = dot(planeNormal, v0Minp0) / dot(planeNormal, dirToPlane);
+	return p0 + s * dirToPlane;
+}
+
+//Sutherland-Hodgman多边形裁剪算法
+void ClipRectBelowLumel(float3 clipPlaneNormal, float3 clipPlaneCenter, StructuredBuffer<float3> rect, float3 rectNormal, int rectIndexCount, out float3 clippedRect[10], out int vertexCount)
+{
+	int idxCount = 0;
+	for (int i = 0; i < rectIndexCount; ++i)
+	{
+		float3 v1 = rect[i];
+		float3 v2 = rect[(i + 1) % rectIndexCount];
+		bool side1 = IsBelowPlane(v1, clipPlaneNormal, clipPlaneCenter);
+		bool side2 = IsBelowPlane(v2, clipPlaneNormal, clipPlaneCenter);
+
+		//都在平面上方
+		if (!side1 && !side2)
+		{
+			clippedRect[idxCount++] = v1;
+			//clipRect.Add(v2);
+		}
+		//a在内侧，b在外侧，则先输出a，再输出ab和分界线的交点；
+		else if (!side1 && side2)
+		{
+			clippedRect[idxCount++] = v1;
+			clippedRect[idxCount++] = GetPlaneLineIntersect(clipPlaneCenter, clipPlaneNormal, v1, v2 - v1);
+		}
+		//a,b都在外侧，则跳过这条边； 
+		//else if (side1 && side2)
+		//{
+
+		//}
+		//a在外侧，b在内侧，则输出ab和分界线的交点。
+		else if (side1 && !side2)
+		{
+			clippedRect[idxCount++] = GetPlaneLineIntersect(clipPlaneCenter, clipPlaneNormal, v1, v2 - v1);
+		}
+	}
+	vertexCount = idxCount;
+}
+
+void EarlyExit(uint3 id)
+{
+	_LightMap[id.xy] = float4(0,0,0,0);
+}
+
+float cross3p(float3 p0, float3 p1, float3 p2)
+{
+	float3 v1 = p0 - p1;
+	float3 v2 = p0 - p2;
+
+	return length(cross(v1, v2));
+}
+
+inline float MaxLightWidth(float3 clippedRect[10], int vertexCount)
+{
+	float max = 0;
+	for(int i = 0; i < vertexCount; ++i)
+	{
+		float dist = distance(clippedRect[0], clippedRect[(i+1)%vertexCount]);
+		if(dist > max)
+		{
+			max = dist;
+		}
+	}
+	return max;
+}
+
+inline float MaxLightWidth(StructuredBuffer<float3> clippedRect, int vertexCount)
+{
+	float max = 0;
+	for(int i = 0; i < vertexCount; ++i)
+	{
+		float dist = distance(clippedRect[0], clippedRect[(i+1)%vertexCount]);
+		if(dist > max)
+		{
+			max = dist;
+		}
+	}
+	return max;
+}
+
+[numthreads(32,32,1)]
+void CSMain(uint3 id : SV_DispatchThreadID)
+{
+	_LightMap[id.xy]  = float4(0,0,0,0);
+	Lumel lumel = _Lumels[id.y * _LightMapSize + id.x];
+	if(!lumel.IsLegalPosition)
+	{
+		EarlyExit(id);
+		return;
+	}
+
+	//3.计算深度
+	float3 VertToLightWS = lumel.Position - _LightPos;
+
+	float ShadowFactor = PCSS(VertToLightWS, 1, lumel.Normal);
+	//float ShadowFactor = ComputeShadowFactor(_CubeShadowMap, my_linear_clamp_sampler, VertToLightWS);
+
+	if (ShadowFactor == 0)
+	{
+		EarlyExit(id);
+		return;
+	}
+
+	//还尼玛会有polygonlight面积过小的情况 当成点光源算formfactor
+	/*
+	float cos1 = dot(lumel.Normal, normalize(-VertToLightWS));
+
+	float distance01 = length(VertToLightWS) / _LightRange;
+	if(cos1 >= 0)
+	{
+		float geometryTerm = cos1 / (1+25*distance01*distance01);
+			
+		float3 irradiance = _LightIntensity.rgb * geometryTerm * ShadowFactor;
+		_LightMap[id.xy] = float4(irradiance.rgb, 1);		
+	}	
+	*/
+	float cos1 = dot(lumel.Normal, normalize(-VertToLightWS));
+	if(cos1 >= 0)
+	{
+		float geometryTerm = cos1 / length(VertToLightWS);
+		geometryTerm = clamp(geometryTerm, 0, 0.1f);
+		float3 irradiance = _LightIntensity.rgb * geometryTerm *ShadowFactor;
+		_LightMap[id.xy] = float4(irradiance.rgb, 1);		
+	}
+}

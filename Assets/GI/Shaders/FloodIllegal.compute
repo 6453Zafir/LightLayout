@@ -1,0 +1,42 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+Texture2D<float4> _From;
+RWTexture2D<float4> _Dst;
+
+float4 NearestLegalColor(Texture2D<float4> from, int2 uv)
+{
+	for (int radius = 0; radius < 10; ++radius)
+	{
+		for (int x = 0; x <= radius; ++x)
+		{
+			for (int y = 0; y <= radius; ++y)
+			{
+				float4 color = from[uv + int2(x, y)];
+				if (any(color))
+				{
+					return color;
+				}
+			}
+		}
+		for (int x = 0; x >= -radius; --x)
+		{
+			for (int y = 0; y >= -radius; --y)
+			{
+				float4 color = from[uv + int2(x, y)];
+				if (any(color))
+				{
+					return color;
+				}
+			}
+		}
+	}
+	return float4(0, 0, 0, 0);
+}
+[numthreads(32,32,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{		
+	_Dst[id.xy] = NearestLegalColor(_From, id.xy);
+}
