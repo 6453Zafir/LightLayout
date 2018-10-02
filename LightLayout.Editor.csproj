@@ -299,6 +299,9 @@
     <Reference Include="GI_Editor">
       <HintPath>Assets/Plugins/GI_Editor.dll</HintPath>
     </Reference>
+    <Reference Include="LitJson 1">
+      <HintPath>Assets/Plugins/LitJson 1.dll</HintPath>
+    </Reference>
     <Reference Include="LitJson">
       <HintPath>Assets/Plugins/LitJson.dll</HintPath>
     </Reference>
@@ -325,9 +328,6 @@
     </Reference>
     <Reference Include="UnityEngine.StandardEvents">
       <HintPath>C:/ProgramData/Unity/cache/packages/packages.unity.com/com.unity.standardevents@1.0.10/UnityEngine.StandardEvents.dll</HintPath>
-    </Reference>
-    <Reference Include="LitJson 1">
-      <HintPath>Assets/Plugins/LitJson 1.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

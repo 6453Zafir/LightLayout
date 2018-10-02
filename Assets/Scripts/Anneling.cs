@@ -131,6 +131,7 @@ namespace SimulateAnneling {
         public Texture2D Lightmap;
         public Shader GetSingleLightmapShader;
 
+        public Texture2D LD;
 
        // private string LightMapPath = "Resources/Scene/bedroom";
         //x的移动空间0~-4.53
@@ -141,7 +142,7 @@ namespace SimulateAnneling {
         const double ZMIN = 0;
 
         //冷却表参数
-        int MarkovLength = 100;          // 马可夫链长度10000
+        int MarkovLength = 5;          // 马可夫链长度10000
         double DecayScale = 0.95;          // 衰减参数0.95
         double StepFactor = 0.2;          // 步长因子0.02
         double Temperature = 100;          // 初始温度
@@ -300,8 +301,9 @@ namespace SimulateAnneling {
                 case 3:
                     //lightMap
                     TestLight.transform.position = new Vector3((float)x, 2.5f, (float)z);
-                    newTex = ConvertEXRtoT2D();
-                    return EntropyPerT(newTex);
+                    // newTex = ConvertEXRtoT2D(LD);
+                    return 0;
+                    //return EntropyPerT(newTex);
                 case 4:
                     {  
                         //给cubemap的不同面加权
@@ -333,7 +335,8 @@ namespace SimulateAnneling {
                 case 5:
                     BWIBaker.Init();
                     BWIBaker.SaveLightmapBeforePostprocessing();
-                    return 0;
+                    BWIBaker.SetLightMap();
+                    return EntropyPerT(LD);
                 default:
                     return 0;
             }
@@ -355,7 +358,9 @@ namespace SimulateAnneling {
                 {
                     currColor = tex.GetPixel(i, j);
                     ret = (int)(currColor.r * 0.299f * 255 + currColor.g * 0.587f * 255 + currColor.b * 0.114f * 255);
+
                     PixelNum += 1;
+                    if(ret>=0&&ret<=255)
                     countPixel[ret] += 1;
                 }
             }
@@ -467,17 +472,19 @@ namespace SimulateAnneling {
         }
 
         //将EXR转为Texture2D
-        Texture2D ConvertEXRtoT2D()
-        {
-            //Lightmapping.bakedGI = true;
+        //Texture2D ConvertEXRtoT2D(Texture2D LD)
+        //{
+        //    //lightmapping.bakedgi = true;
 
-            //Lightmapping.ClearDiskCache();
-            //Lightmapping.completed = Lightmapping.OnCompletedFunction(() => {});
-            Lightmapping.Bake();
-            //LightmapSettings.lightmaps[0] = null;
-            Texture2D tex = LightmapSettings.lightmaps[0].lightmapColor;
-            return tex;
-        }
+        //    //lightmapping.cleardiskcache();
+        //    //lightmapping.completed = lightmapping.oncompletedfunction(() => {});
+        //   // lightmapping.bake();
+        //    //lightmapsettings.lightmaps[0] = null;
+        //    //texture2d tex = LD.GetPixels
+        //   // return tex;
+
+        //   // return (LD.EncodeToPNG());
+        //}
 
 
     } 
