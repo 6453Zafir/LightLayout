@@ -126,6 +126,7 @@ namespace SimulateAnneling {
 
         public BakerWithIsm BWIBaker;
 
+        public GetSingleLightmap GSL;
         public GameObject FatherGO;
         public RenderTexture RT;
         public Texture2D Lightmap;
@@ -133,7 +134,11 @@ namespace SimulateAnneling {
 
         public Texture2D LD;
 
-       // private string LightMapPath = "Resources/Scene/bedroom";
+        public GameObject bed, besideTable, chest, paintings, curtains, TVStand;
+        double bed_w = 0.15f, besideTable_w = 0.15f, chest_w = 0.15f, paintings_w = 0.15, curtains_w = 0.15f, TVStand_w = 0.15f;
+        double bed_e, besideTable_e, chest_e, paintings_e, curtains_e, TVStand_e;
+
+        // private string LightMapPath = "Resources/Scene/bedroom";
         //x的移动空间0~-4.53
         const double XMAX = 3;
         const double XMIN = 0;
@@ -191,8 +196,8 @@ namespace SimulateAnneling {
             }
             if (Input.GetKeyDown(KeyCode.Alpha3))
             {
-                Lightmapping.realtimeGI = false;
-                Lightmapping.bakedGI = true;
+                //Lightmapping.realtimeGI = false;
+                //Lightmapping.bakedGI = true;
                 SAOptimizeLighting(3);
             }
             if (Input.GetKeyDown(KeyCode.Alpha4))
@@ -202,6 +207,7 @@ namespace SimulateAnneling {
             if (Input.GetKeyDown(KeyCode.Alpha5))
             {
                 SAOptimizeLighting(5);
+                
             }
         }
 
@@ -270,8 +276,12 @@ namespace SimulateAnneling {
             } while (Math.Abs(GetEntropy(funcNum, BestX,BestZ) - GetEntropy(funcNum, PreBestX,PreBestZ)) > Tolerance);
             TestLight.transform.position = new Vector3((float)BestX, 2.5f, (float)BestZ);
 
-            Lightmapping.realtimeGI = true;
-            Lightmapping.bakedGI = false;
+            if (funcNum == 5) {
+                GSL.showAllFurnitures();
+                BWIBaker.Init();
+                BWIBaker.SaveLightmapBeforePostprocessing();
+                BWIBaker.SetLightMap();
+            }
             print("function " + funcNum + " took " + (Time.realtimeSinceStartup - currentTime) + "s, The final entropy value is: " +(-entropyValue));
         }
 
@@ -299,11 +309,10 @@ namespace SimulateAnneling {
                     newTex = ConvertRTtoT2D(CenterCam.targetTexture);
                     return EntropyPerT(newTex);
                 case 3:
-                    //lightMap
-                    TestLight.transform.position = new Vector3((float)x, 2.5f, (float)z);
-                    // newTex = ConvertEXRtoT2D(LD);
-                    return 0;
-                    //return EntropyPerT(newTex);
+                    BWIBaker.Init();
+                    BWIBaker.SaveLightmapBeforePostprocessing();
+                    BWIBaker.SetLightMap();
+                    return EntropyPerT(LD);
                 case 4:
                     {  
                         //给cubemap的不同面加权
@@ -336,13 +345,20 @@ namespace SimulateAnneling {
                     BWIBaker.Init();
                     BWIBaker.SaveLightmapBeforePostprocessing();
                     BWIBaker.SetLightMap();
-                    return EntropyPerT(LD);
+                    bed_e= EntropyPerT(GSL.getSingleLightmap(bed));
+                    besideTable_e= EntropyPerT(GSL.getSingleLightmap(besideTable));
+                    chest_e= EntropyPerT(GSL.getSingleLightmap(chest));
+                    paintings_e= EntropyPerT(GSL.getSingleLightmap(paintings));
+                    curtains_e= EntropyPerT(GSL.getSingleLightmap(curtains));
+                    TVStand_e= EntropyPerT(GSL.getSingleLightmap(TVStand));
+                    entropyValue = bed_e * bed_w + besideTable_e * besideTable_w + chest_e * chest_w + paintings_e * paintings_w + curtains_e * curtains_w + TVStand_e * TVStand_w;
+                    return entropyValue;
                 default:
                     return 0;
             }
         }
 
-        //获得每个cubemap面上的熵
+        //获得某个texture的熵
         double EntropyPerT(Texture2D tex)
         {
             PixelNum = 0;
@@ -470,22 +486,6 @@ namespace SimulateAnneling {
             tex.Apply();
             return tex;
         }
-
-        //将EXR转为Texture2D
-        //Texture2D ConvertEXRtoT2D(Texture2D LD)
-        //{
-        //    //lightmapping.bakedgi = true;
-
-        //    //lightmapping.cleardiskcache();
-        //    //lightmapping.completed = lightmapping.oncompletedfunction(() => {});
-        //   // lightmapping.bake();
-        //    //lightmapsettings.lightmaps[0] = null;
-        //    //texture2d tex = LD.GetPixels
-        //   // return tex;
-
-        //   // return (LD.EncodeToPNG());
-        //}
-
 
     } 
 }

@@ -12,6 +12,7 @@ public class GetSingleLightmap : MonoBehaviour
     public RenderTexture RT;
     public Texture2D Lightmap;
     public Shader GetSingleLightmapShader;
+    public Camera GBCamera;
     // Use this for initialization
     void Start()
     {
@@ -60,46 +61,48 @@ public class GetSingleLightmap : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             getSingleLightmap(FatherGO);
-            //for (int i = 0; i < FatherGO.transform.childCount; i++)
-            //{
-            //    if (FatherGO.transform.GetChild(i).GetComponent<MeshRenderer>() != null)
-            //    {
-            //        GameObject tempChild = FatherGO.transform.GetChild(i).gameObject;
-            //        getSingleLightmap(tempChild);
-            //    }
-            //}
+        }
+
+        if (Input.GetKeyDown(KeyCode.U))
+        {
+            showAllFurnitures();
         }
     }
 
-    Texture2D getSingleLightmap(GameObject ObToLightmap)
+    public Texture2D getSingleLightmap(GameObject ObToLightmap)
     {
 
         if (ObToLightmap == null) return null;
-        /*新建空的lightmap以写入
-        var LightMapTexture = new Texture2D(512, 512, TextureFormat.ARGB32, false);
-        var fillColorArray = LightMapTexture.GetPixels();
 
-        for (var i = 0; i < fillColorArray.Length; ++i)
+        //通过父物体来隐藏显示场景中所有物体
+        GameObject TempParent = ObToLightmap.transform.parent.gameObject;
+        for (int i = 0; i < TempParent.transform.childCount; i++)
         {
-            fillColorArray[i] = Color.black;
+            if (TempParent.transform.GetChild(i).name != ObToLightmap.name)
+            {
+                TempParent.transform.GetChild(i).gameObject.SetActive(false);
+            }
+            else
+            {
+                TempParent.transform.GetChild(i).gameObject.SetActive(true);
+            }
         }
 
-        LightMapTexture.SetPixels(fillColorArray);
-
-        LightMapTexture.Apply();
-        */
-
-        var allRenderer = GameObject.FindObjectsOfType<MeshRenderer>();
-        foreach (var meshRenderer in allRenderer)
+        //通过遍历含有meshrenderer的组件来隐藏显示场景中所有物体
         {
-            meshRenderer.gameObject.SetActive(false);
-        }
-        ObToLightmap.SetActive(true);
-        for (int i = 0; i< ObToLightmap.transform.childCount; i++) {
-            ObToLightmap.transform.GetChild(i).gameObject.SetActive(true);
+            //var allRenderer = GameObject.FindObjectsOfType<MeshRenderer>();
+            //foreach (var meshRenderer in allRenderer)
+            //{
+            //    meshRenderer.gameObject.SetActive(false);
+            //}
+            //ObToLightmap.SetActive(true);
+            //for (int i = 0; i < ObToLightmap.transform.childCount; i++)
+            //{
+            //    ObToLightmap.transform.GetChild(i).gameObject.SetActive(true);
+            //}
         }
 
-        var go = GameObject.Find("GBufferCamera");
+        var go = GameObject.Find("gBufferCamera");
         Camera gBufferCamera = null;
         if (go == null)
             gBufferCamera = new GameObject("GBufferCamera").AddComponent<Camera>();
@@ -109,6 +112,7 @@ public class GetSingleLightmap : MonoBehaviour
         var aabb = CalcBounds(FatherGO);
         var maxExtend = Mathf.Max(aabb.extents.x, aabb.extents.y, aabb.extents.z); ;
         gBufferCamera.orthographic = true;
+        gBufferCamera.cullingMask = 1 << 8;
         //gBufferCamera.aspect = 1;
         //gBufferCamera.orthographicSize = maxExtend * 2;
         gBufferCamera.allowMSAA = false;
@@ -129,6 +133,15 @@ public class GetSingleLightmap : MonoBehaviour
         //Shader.SetGlobalVector("_LightmspST", ObToLightmap.GetComponent<MeshRenderer>().lightmapScaleOffset);
         gBufferCamera.RenderWithShader(GetSingleLightmapShader, "");
         return ConvertRTtoT2D(RT);
+    }
+
+    public void showAllFurnitures()
+    {
+        GameObject TempParent = FatherGO.transform.parent.gameObject;
+        for (int i = 0; i < TempParent.transform.childCount; i++)
+        {
+            TempParent.transform.GetChild(i).gameObject.SetActive(true);
+        }
     }
 
     Texture2D ConvertRTtoT2D(RenderTexture rt)

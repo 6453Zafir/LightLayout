@@ -240,65 +240,65 @@ public class BakerWithIsm : MonoBehaviour
         return tmp;
     }
 
-    void OnGUI()
-    {
-        GUILayout.BeginArea(new Rect(Screen.width * 3.0f / 5-10, 50, Screen.width *2 / 5.0f, Screen.height));
+    //void OnGUI()
+    //{
+    //    GUILayout.BeginArea(new Rect(Screen.width * 3.0f / 5-10, 50, Screen.width *2 / 5.0f, Screen.height));
 
-        if (GUILayout.Button("Init"))
-        {
-            Init();
-        }
-        if (GUILayout.Button("SaveLightmap"))
-        {
-            for(int i = 0; i < _geometryBuffer.LightmapCount; ++i)
-            {
-                if (EncodeRgbm)
-                {
-                    _gi.EncodeRgba32(_gi.LightmapBeforePostProcessing[i].ToTexture2D()).WriteToFile("", "Lightmap" + i);
-                }
-                else
-                {
-                    _gi.LightmapBeforePostProcessing[i].ToTexture2D().WriteToFile("", "Lightmap" + i);
-                }
-            }
-        }
-        if (GUILayout.Button("SetLightmap"))
-        {
-            SetLightMap();
-        }
-        GUILayout.BeginVertical();
+    //    if (GUILayout.Button("Init"))
+    //    {
+    //        Init();
+    //    }
+    //    if (GUILayout.Button("SaveLightmap"))
+    //    {
+    //        for(int i = 0; i < _geometryBuffer.LightmapCount; ++i)
+    //        {
+    //            if (EncodeRgbm)
+    //            {
+    //                _gi.EncodeRgba32(_gi.LightmapBeforePostProcessing[i].ToTexture2D()).WriteToFile("", "Lightmap" + i);
+    //            }
+    //            else
+    //            {
+    //                _gi.LightmapBeforePostProcessing[i].ToTexture2D().WriteToFile("", "Lightmap" + i);
+    //            }
+    //        }
+    //    }
+    //    if (GUILayout.Button("SetLightmap"))
+    //    {
+    //        SetLightMap();
+    //    }
+    //    GUILayout.BeginVertical();
 
-        GUILayout.BeginHorizontal();
-        GUILayout.Label("LightmapSize: " + LightMapSize);
-        LightMapSize = int.Parse(GUILayout.TextField(LightMapSize.ToString()));
-        GUILayout.EndHorizontal();
+    //    GUILayout.BeginHorizontal();
+    //    GUILayout.Label("LightmapSize: " + LightMapSize);
+    //    LightMapSize = int.Parse(GUILayout.TextField(LightMapSize.ToString()));
+    //    GUILayout.EndHorizontal();
 
-       // GUILayout.BeginHorizontal();
-       // GUILayout.Label("ShadowmapSize: " + ShadowmapSize);
-      //  ShadowmapSize = int.Parse(GUILayout.TextField(ShadowmapSize.ToString()));
-      //  GUILayout.EndHorizontal();
+    //   // GUILayout.BeginHorizontal();
+    //   // GUILayout.Label("ShadowmapSize: " + ShadowmapSize);
+    //  //  ShadowmapSize = int.Parse(GUILayout.TextField(ShadowmapSize.ToString()));
+    //  //  GUILayout.EndHorizontal();
 
-        GUILayout.BeginHorizontal();
-        GUILayout.Label("TotalSampleCount");
-        TotalSampleCount = int.Parse(GUILayout.TextField(TotalSampleCount.ToString()));
-        GUILayout.EndHorizontal();
+    //    GUILayout.BeginHorizontal();
+    //    GUILayout.Label("TotalSampleCount");
+    //    TotalSampleCount = int.Parse(GUILayout.TextField(TotalSampleCount.ToString()));
+    //    GUILayout.EndHorizontal();
 
-        GUILayout.BeginHorizontal();
-        GUILayout.Label("IndirectWight: " + IndirectWight);
-        IndirectWight = GUILayout.HorizontalSlider(IndirectWight, 0, 2);
-        GUILayout.EndHorizontal();
+    //    GUILayout.BeginHorizontal();
+    //    GUILayout.Label("IndirectWight: " + IndirectWight);
+    //    IndirectWight = GUILayout.HorizontalSlider(IndirectWight, 0, 2);
+    //    GUILayout.EndHorizontal();
 
-        GUILayout.BeginHorizontal();
-        GUILayout.Label("Bounce: " + Bounce);
-        Bounce = (int)GUILayout.HorizontalSlider(Bounce, 1, 4);
-        GUILayout.EndHorizontal();
+    //    GUILayout.BeginHorizontal();
+    //    GUILayout.Label("Bounce: " + Bounce);
+    //    Bounce = (int)GUILayout.HorizontalSlider(Bounce, 1, 4);
+    //    GUILayout.EndHorizontal();
 
-        ShowPolygonLight = GUILayout.Toggle(ShowPolygonLight, "Draw PolygonLight");
-        ShowPointLight = GUILayout.Toggle(ShowPointLight, "Draw PointLight");
+    //    ShowPolygonLight = GUILayout.Toggle(ShowPolygonLight, "Draw PolygonLight");
+    //    ShowPointLight = GUILayout.Toggle(ShowPointLight, "Draw PointLight");
 
-        GUILayout.EndVertical();
-        GUILayout.EndArea();
-    }
+    //    GUILayout.EndVertical();
+    //    GUILayout.EndArea();
+    //}
     public bool ShowPolygonLight;
     public bool ShowPointLight;
 

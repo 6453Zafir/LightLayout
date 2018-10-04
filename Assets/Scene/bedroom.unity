@@ -125,9 +125,9 @@ GameObject:
   - component: {fileID: 9642285}
   - component: {fileID: 9642287}
   - component: {fileID: 9642286}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Plane010
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -607,6 +607,7 @@ MonoBehaviour:
   Lightmap: {fileID: 2800000, guid: 571e9f96c4d20474286dfdd63a8acaae, type: 3}
   GetSingleLightmapShader: {fileID: 4800000, guid: d710164c7e6a659469cf7be418e3aea4,
     type: 3}
+  GBCamera: {fileID: 1896328678}
 --- !u!4 &114527206
 Transform:
   m_ObjectHideFlags: 0
@@ -849,9 +850,9 @@ GameObject:
   - component: {fileID: 163349136}
   - component: {fileID: 163349138}
   - component: {fileID: 163349137}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Object3021
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -922,9 +923,9 @@ GameObject:
   - component: {fileID: 206678608}
   - component: {fileID: 206678610}
   - component: {fileID: 206678609}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Cylinder001
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1352,9 +1353,9 @@ GameObject:
   - component: {fileID: 263954353}
   - component: {fileID: 263954355}
   - component: {fileID: 263954354}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Plane011
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1423,9 +1424,9 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 279626929}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Factor_besideTable
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1459,9 +1460,9 @@ GameObject:
   - component: {fileID: 289325207}
   - component: {fileID: 289325209}
   - component: {fileID: 289325208}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: zanaveska
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1605,9 +1606,9 @@ GameObject:
   - component: {fileID: 302439769}
   - component: {fileID: 302439771}
   - component: {fileID: 302439770}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Line009
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1811,9 +1812,9 @@ GameObject:
   - component: {fileID: 337797635}
   - component: {fileID: 337797637}
   - component: {fileID: 337797636}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Object013
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2028,9 +2029,9 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 376134500}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Factor_TVStand
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2064,9 +2065,9 @@ GameObject:
   - component: {fileID: 384940289}
   - component: {fileID: 384940291}
   - component: {fileID: 384940290}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Plane007
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2317,9 +2318,9 @@ GameObject:
   - component: {fileID: 404602815}
   - component: {fileID: 404602817}
   - component: {fileID: 404602816}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Box024
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2536,9 +2537,9 @@ GameObject:
   - component: {fileID: 453895379}
   - component: {fileID: 453895381}
   - component: {fileID: 453895380}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: pillow3
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2682,9 +2683,9 @@ GameObject:
   - component: {fileID: 495039355}
   - component: {fileID: 495039357}
   - component: {fileID: 495039356}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Box020
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2893,9 +2894,9 @@ GameObject:
   - component: {fileID: 573615583}
   - component: {fileID: 573615585}
   - component: {fileID: 573615584}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Line004
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3128,9 +3129,9 @@ GameObject:
   - component: {fileID: 602007597}
   - component: {fileID: 602007599}
   - component: {fileID: 602007598}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: low001
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3274,9 +3275,9 @@ GameObject:
   - component: {fileID: 609528865}
   - component: {fileID: 609528867}
   - component: {fileID: 609528866}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: low
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3921,9 +3922,9 @@ GameObject:
   - component: {fileID: 738311449}
   - component: {fileID: 738311451}
   - component: {fileID: 738311450}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: pillow1
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4065,9 +4066,9 @@ GameObject:
   - component: {fileID: 758904995}
   - component: {fileID: 758904997}
   - component: {fileID: 758904996}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Object3048
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4669,9 +4670,9 @@ GameObject:
   - component: {fileID: 847955072}
   - component: {fileID: 847955071}
   - component: {fileID: 847955070}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Box022
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5315,11 +5316,19 @@ MonoBehaviour:
   CenterCam: {fileID: 844321510}
   centerCubemap: {fileID: 8900000, guid: 48e11accbe1bccb4ebc0a1938e0707f9, type: 2}
   BWIBaker: {fileID: 706493958}
+  GSL: {fileID: 114527205}
   FatherGO: {fileID: 1710450690}
   RT: {fileID: 0}
   Lightmap: {fileID: 2800000, guid: 571e9f96c4d20474286dfdd63a8acaae, type: 3}
   GetSingleLightmapShader: {fileID: 4800000, guid: d710164c7e6a659469cf7be418e3aea4,
     type: 3}
+  LD: {fileID: 2800000, guid: 571e9f96c4d20474286dfdd63a8acaae, type: 3}
+  bed: {fileID: 1710450690}
+  besideTable: {fileID: 279626928}
+  chest: {fileID: 1549155354}
+  paintings: {fileID: 2077623227}
+  curtains: {fileID: 1114887946}
+  TVStand: {fileID: 376134499}
 --- !u!4 &906541698
 Transform:
   m_ObjectHideFlags: 0
@@ -5563,9 +5572,9 @@ GameObject:
   - component: {fileID: 998978730}
   - component: {fileID: 998978729}
   - component: {fileID: 998978728}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: krovat
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5648,9 +5657,9 @@ GameObject:
   - component: {fileID: 1049294781}
   - component: {fileID: 1049294783}
   - component: {fileID: 1049294782}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Line008
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5736,9 +5745,9 @@ GameObject:
   - component: {fileID: 1053490349}
   - component: {fileID: 1053490351}
   - component: {fileID: 1053490350}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Box023
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5809,9 +5818,9 @@ GameObject:
   - component: {fileID: 1069443554}
   - component: {fileID: 1069443556}
   - component: {fileID: 1069443555}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Line007
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6026,9 +6035,9 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1114887947}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Factor_curtains
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6135,9 +6144,9 @@ GameObject:
   - component: {fileID: 1152655403}
   - component: {fileID: 1152655402}
   - component: {fileID: 1152655401}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Tumba_lp001
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6220,9 +6229,9 @@ GameObject:
   - component: {fileID: 1164243570}
   - component: {fileID: 1164243572}
   - component: {fileID: 1164243571}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Plane005
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6731,9 +6740,9 @@ GameObject:
   - component: {fileID: 1219798549}
   - component: {fileID: 1219798551}
   - component: {fileID: 1219798550}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Object3047
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6804,9 +6813,9 @@ GameObject:
   - component: {fileID: 1222117224}
   - component: {fileID: 1222117226}
   - component: {fileID: 1222117225}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Plane009
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6943,9 +6952,9 @@ GameObject:
   - component: {fileID: 1265533977}
   - component: {fileID: 1265533979}
   - component: {fileID: 1265533978}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Line005
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -7017,9 +7026,9 @@ GameObject:
   - component: {fileID: 1271143136}
   - component: {fileID: 1271143135}
   - component: {fileID: 1271143137}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Box019
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -7102,9 +7111,9 @@ GameObject:
   - component: {fileID: 1336831069}
   - component: {fileID: 1336831071}
   - component: {fileID: 1336831070}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Object3049
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -7566,9 +7575,9 @@ GameObject:
   - component: {fileID: 1418524277}
   - component: {fileID: 1418524279}
   - component: {fileID: 1418524278}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Plane003
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -7785,9 +7794,9 @@ GameObject:
   - component: {fileID: 1427383736}
   - component: {fileID: 1427383738}
   - component: {fileID: 1427383737}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: pillow2
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -7931,9 +7940,9 @@ GameObject:
   - component: {fileID: 1454789610}
   - component: {fileID: 1454789612}
   - component: {fileID: 1454789611}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Torus001
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -8075,9 +8084,9 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1549155355}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Factor_chest
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -8183,9 +8192,9 @@ GameObject:
   - component: {fileID: 1558651313}
   - component: {fileID: 1558651315}
   - component: {fileID: 1558651314}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Plane004
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -8759,9 +8768,9 @@ GameObject:
   - component: {fileID: 1684287339}
   - component: {fileID: 1684287341}
   - component: {fileID: 1684287340}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Torus002
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -8832,9 +8841,9 @@ GameObject:
   - component: {fileID: 1694321409}
   - component: {fileID: 1694321411}
   - component: {fileID: 1694321410}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Object011
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -9049,9 +9058,9 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1710450691}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Factor_bed
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -9596,9 +9605,9 @@ GameObject:
   - component: {fileID: 1856300018}
   - component: {fileID: 1856300020}
   - component: {fileID: 1856300019}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Object3046
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -9669,9 +9678,9 @@ GameObject:
   - component: {fileID: 1873180842}
   - component: {fileID: 1873180844}
   - component: {fileID: 1873180843}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Line006
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -9732,6 +9741,71 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1873180841}
   m_Mesh: {fileID: 4300046, guid: 8a2fb7c32b8016d4898d5bc9dd322b56, type: 3}
+--- !u!1 &1896328675
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1896328679}
+  - component: {fileID: 1896328678}
+  m_Layer: 0
+  m_Name: GBCamera
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!20 &1896328678
+Camera:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1896328675}
+  m_Enabled: 1
+  serializedVersion: 2
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_NormalizedViewPortRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+  near clip plane: 0.3
+  far clip plane: 1.199925
+  field of view: 60
+  orthographic: 1
+  orthographic size: 1.199925
+  m_Depth: 0
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 256
+  m_RenderingPath: -1
+  m_TargetTexture: {fileID: 0}
+  m_TargetDisplay: 0
+  m_TargetEye: 3
+  m_HDR: 0
+  m_AllowMSAA: 0
+  m_AllowDynamicResolution: 0
+  m_ForceIntoRT: 0
+  m_OcclusionCulling: 1
+  m_StereoConvergence: 10
+  m_StereoSeparation: 0.022
+--- !u!4 &1896328679
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1896328675}
+  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 1.7244436, y: -0.36490148, z: 0.25983125}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 15
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1917227024
 GameObject:
   m_ObjectHideFlags: 0
@@ -9816,9 +9890,9 @@ GameObject:
   - component: {fileID: 1991047492}
   - component: {fileID: 1991047491}
   - component: {fileID: 1991047490}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Tumba_lp
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -9901,9 +9975,9 @@ GameObject:
   - component: {fileID: 1999699336}
   - component: {fileID: 1999699338}
   - component: {fileID: 1999699337}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Box025
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -10264,9 +10338,9 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 2077623228}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Factor_paintings
-  m_TagString: Untagged
+  m_TagString: furnitures
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
