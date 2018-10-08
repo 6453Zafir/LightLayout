@@ -132,7 +132,7 @@ namespace SimulateAnneling {
         public Texture2D Lightmap;
         public Shader GetSingleLightmapShader;
 
-        public Texture2D LD;
+       // public Texture2D LD;
 
         public GameObject bed, besideTable, chest, paintings, curtains, TVStand;
         double bed_w = 0.15f, besideTable_w = 0.15f, chest_w = 0.15f, paintings_w = 0.15, curtains_w = 0.15f, TVStand_w = 0.15f;
@@ -147,7 +147,7 @@ namespace SimulateAnneling {
         const double ZMIN = 0;
 
         //冷却表参数
-        int MarkovLength = 5;          // 马可夫链长度10000
+        int MarkovLength = 2;          // 马可夫链长度10000
         double DecayScale = 0.95;          // 衰减参数0.95
         double StepFactor = 0.2;          // 步长因子0.02
         double Temperature = 100;          // 初始温度
@@ -196,8 +196,6 @@ namespace SimulateAnneling {
             }
             if (Input.GetKeyDown(KeyCode.Alpha3))
             {
-                //Lightmapping.realtimeGI = false;
-                //Lightmapping.bakedGI = true;
                 SAOptimizeLighting(3);
             }
             if (Input.GetKeyDown(KeyCode.Alpha4))
@@ -207,7 +205,6 @@ namespace SimulateAnneling {
             if (Input.GetKeyDown(KeyCode.Alpha5))
             {
                 SAOptimizeLighting(5);
-                
             }
         }
 
@@ -310,9 +307,9 @@ namespace SimulateAnneling {
                     return EntropyPerT(newTex);
                 case 3:
                     BWIBaker.Init();
-                    BWIBaker.SaveLightmapBeforePostprocessing();
+                    //BWIBaker.SaveLightmapBeforePostprocessing();
                     BWIBaker.SetLightMap();
-                    return EntropyPerT(LD);
+                    return EntropyPerT(BWIBaker.GetLightmap());
                 case 4:
                     {  
                         //给cubemap的不同面加权

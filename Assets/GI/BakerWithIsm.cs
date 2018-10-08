@@ -151,6 +151,11 @@ public class BakerWithIsm : MonoBehaviour
         }
     }
 
+    public Texture2D GetLightmap()
+    {
+
+           return _gi.EncodeRgba32(_gi.LightmapBeforePostProcessing[0].ToTexture2D());
+    }
 
     public int SpeID;
     public void SyncObjectPosition(ClientSyncObjectData data)

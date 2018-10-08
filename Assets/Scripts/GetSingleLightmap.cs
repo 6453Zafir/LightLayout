@@ -10,9 +10,9 @@ public class GetSingleLightmap : MonoBehaviour
 
     public GameObject FatherGO;
     public RenderTexture RT;
-    public Texture2D Lightmap;
+   // public Texture2D Lightmap;
     public Shader GetSingleLightmapShader;
-    public Camera GBCamera;
+    public BakerWithIsm BWIBaker;
     // Use this for initialization
     void Start()
     {
@@ -32,6 +32,7 @@ public class GetSingleLightmap : MonoBehaviour
         }
         return aabb;
     }
+
     //所有子物体包围盒
     public Bounds CalcBounds(GameObject GO)
     {
@@ -102,37 +103,63 @@ public class GetSingleLightmap : MonoBehaviour
             //}
         }
 
-        var go = GameObject.Find("gBufferCamera");
+        var go = GameObject.Find("GBufferCamera");
         Camera gBufferCamera = null;
         if (go == null)
             gBufferCamera = new GameObject("GBufferCamera").AddComponent<Camera>();
         else
             gBufferCamera = go.GetComponent<Camera>();
-       // var aabb = CalcAABB(new List<MeshRenderer>() { ObToLightmap.GetComponent<MeshRenderer>() });
         var aabb = CalcBounds(FatherGO);
         var maxExtend = Mathf.Max(aabb.extents.x, aabb.extents.y, aabb.extents.z); ;
         gBufferCamera.orthographic = true;
+        //该相机只看得到所有需要加权的家具
         gBufferCamera.cullingMask = 1 << 8;
-        //gBufferCamera.aspect = 1;
-        //gBufferCamera.orthographicSize = maxExtend * 2;
         gBufferCamera.allowMSAA = false;
         gBufferCamera.allowHDR = false;
-
         gBufferCamera.enabled = false;
         gBufferCamera.clearFlags = CameraClearFlags.SolidColor;
         gBufferCamera.backgroundColor = Color.clear;
-        //gBufferCamera.farClipPlane = maxExtend * 2;
         var cameraTransform = gBufferCamera.transform;
-        //cameraTransform.position = aabb.center;
-        //cameraTransform.forward = aabb.extents.x <= aabb.extents.y
-        //    ? (aabb.extents.x <= aabb.extents.z ? new Vector3(1, 0, 0) : new Vector3(0, 0, 1))
-        //    : (aabb.extents.y <= aabb.extents.z ? new Vector3(0, 1, 0) : new Vector3(0, 0, 1));
-        //cameraTransform.position = aabb.center - cameraTransform.forward * maxExtend;
         gBufferCamera.targetTexture = RT;
-        Shader.SetGlobalTexture("_Lightmap", Lightmap);
-        //Shader.SetGlobalVector("_LightmspST", ObToLightmap.GetComponent<MeshRenderer>().lightmapScaleOffset);
+        Shader.SetGlobalTexture("_Lightmap", BWIBaker.GetLightmap());
         gBufferCamera.RenderWithShader(GetSingleLightmapShader, "");
         return ConvertRTtoT2D(RT);
+
+        //获得单一物体充斥整张lightmap
+        {
+        //    var go = GameObject.Find("gBufferCamera");
+        //    Camera gBufferCamera = null;
+        //    if (go == null)
+        //        gBufferCamera = new GameObject("GBufferCamera").AddComponent<Camera>();
+        //    else
+        //        gBufferCamera = go.GetComponent<Camera>();
+        //    var aabb = CalcAABB(new List<MeshRenderer>() { ObToLightmap.GetComponent<MeshRenderer>() });
+
+        //    var maxExtend = Mathf.Max(aabb.extents.x, aabb.extents.y, aabb.extents.z); ;
+        //    gBufferCamera.orthographic = true;
+        //    gBufferCamera.cullingMask = 1 << 8;
+        //    gBufferCamera.aspect = 1;
+        //    gBufferCamera.orthographicSize = maxExtend * 2;
+        //    gBufferCamera.allowMSAA = false;
+        //    gBufferCamera.allowHDR = false;
+
+        //    gBufferCamera.enabled = false;
+        //    gBufferCamera.clearFlags = CameraClearFlags.SolidColor;
+        //    gBufferCamera.backgroundColor = Color.clear;
+        //    gBufferCamera.farClipPlane = maxExtend * 2;
+        //    var cameraTransform = gBufferCamera.transform;
+        //    cameraTransform.position = aabb.center;
+        //    cameraTransform.forward = aabb.extents.x <= aabb.extents.y
+        //        ? (aabb.extents.x <= aabb.extents.z ? new Vector3(1, 0, 0) : new Vector3(0, 0, 1))
+        //        : (aabb.extents.y <= aabb.extents.z ? new Vector3(0, 1, 0) : new Vector3(0, 0, 1));
+        //    cameraTransform.position = aabb.center - cameraTransform.forward * maxExtend;
+        //    gBufferCamera.targetTexture = RT;
+        //    Shader.SetGlobalTexture("_Lightmap", Lightmap);
+        //    //相应修改Getsinglelightmapshader
+        //    Shader.SetGlobalVector("_LightmspST", ObToLightmap.GetComponent<MeshRenderer>().lightmapScaleOffset);
+        //    gBufferCamera.RenderWithShader(GetSingleLightmapShader, "");
+        //    return ConvertRTtoT2D(RT);
+        }
     }
 
     public void showAllFurnitures()
